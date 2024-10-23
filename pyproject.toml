@@ -1,3 +1,4 @@
+
 [project]
 name = "hats_cloudtests"
 license = {file = "LICENSE"}
@@ -24,7 +25,7 @@ dependencies = [
 ]
 
 [project.urls]
-"Source Code" = "https://github.com/astronomy-commons/hipscat_cloudtests"
+"Source Code" = "https://github.com/astronomy-commons/hats_cloudtests"
 
 # On a mac, install optional dependencies with `pip install '.[dev]'` (include the single quotes)
 [project.optional-dependencies]
@@ -90,7 +91,8 @@ select = [
     "D300",
     "D417",
     "D419",
-
+    # Numpy v2.0 compatibility
+    "NPY201",
 ]
 
 ignore = [
