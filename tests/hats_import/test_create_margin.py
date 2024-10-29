@@ -1,5 +1,5 @@
 import hats_import.margin_cache.margin_cache as mc
-from hats.catalog.healpix_dataset.healpix_dataset import HealpixDataset
+from hats import read_hats
 from hats_import.margin_cache.margin_cache_arguments import MarginCacheArguments
 
 
@@ -30,7 +30,7 @@ def test_margin_cache_gen(
 
     mc.generate_margin_cache(args, dask_client)
 
-    catalog = HealpixDataset.read_hats(args.catalog_path)
+    catalog = read_hats(args.catalog_path)
     assert catalog.on_disk
     assert catalog.catalog_path == args.catalog_path
 
@@ -61,6 +61,6 @@ def test_margin_cache_gen_read_from_cloud(
 
     mc.generate_margin_cache(args, dask_client)
 
-    catalog = HealpixDataset.read_hats(args.catalog_path)
+    catalog = read_hats(args.catalog_path)
     assert catalog.on_disk
     assert catalog.catalog_path == args.catalog_path

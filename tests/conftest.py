@@ -223,7 +223,7 @@ def small_sky_xmatch_catalog_cloud(small_sky_xmatch_dir_cloud):
 
 @pytest.fixture
 def small_sky_order1_hats_catalog_cloud(small_sky_order1_dir_cloud):
-    return hc.catalog.Catalog.read_hats(small_sky_order1_dir_cloud)
+    return hc.read_hats(small_sky_order1_dir_cloud)
 
 
 @pytest.fixture
