@@ -2,7 +2,7 @@
 
 import hats_import.catalog.run_import as runner
 import pytest
-from hats.catalog.catalog import Catalog
+from hats import read_hats
 from hats_import.catalog.arguments import ImportArguments
 from hats_import.catalog.file_readers import CsvReader
 
@@ -30,7 +30,7 @@ def test_catalog_import_write_to_cloud(
     runner.run(args, dask_client)
 
     # Check that the catalog metadata file exists
-    catalog = Catalog.read_hats(args.catalog_path)
+    catalog = read_hats(args.catalog_path)
     assert catalog.on_disk
     assert catalog.catalog_path == args.catalog_path
     assert catalog.catalog_info.ra_column == "ra"
@@ -61,7 +61,7 @@ def test_catalog_import_read_from_cloud(dask_client, small_sky_parts_dir_cloud, 
     runner.run(args, dask_client)
 
     # Check that the catalog metadata file exists
-    catalog = Catalog.read_hats(args.catalog_path)
+    catalog = read_hats(args.catalog_path)
     assert catalog.on_disk
     assert catalog.catalog_path == args.catalog_path
     assert catalog.catalog_info.ra_column == "ra"

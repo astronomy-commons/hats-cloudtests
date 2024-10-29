@@ -1,6 +1,6 @@
 import hats_import.soap.run_soap as runner
 import pytest
-from hats.catalog.association_catalog.association_catalog import AssociationCatalog
+from hats import read_hats
 from hats.io.file_io import read_parquet_metadata
 from hats_import.soap.arguments import SoapArguments
 
@@ -36,7 +36,7 @@ def test_object_to_self_write_to_cloud(
     runner.run(small_sky_soap_args, dask_client)
 
     ## Check that the association data can be parsed as a valid association catalog.
-    catalog = AssociationCatalog.read_hats(small_sky_soap_args.catalog_path)
+    catalog = read_hats(small_sky_soap_args.catalog_path)
     assert catalog.on_disk
     assert catalog.catalog_path == small_sky_soap_args.catalog_path
     assert len(catalog.get_join_pixels()) == 4
@@ -66,7 +66,7 @@ def test_object_to_self_write_to_cloud(
     runner.run(small_sky_soap_args, dask_client)
 
     ## Check that the association data can be parsed as a valid association catalog.
-    catalog = AssociationCatalog.read_hats(small_sky_soap_args.catalog_path)
+    catalog = read_hats(small_sky_soap_args.catalog_path)
     assert catalog.on_disk
     assert catalog.catalog_path == small_sky_soap_args.catalog_path
     assert len(catalog.get_join_pixels()) == 4
@@ -101,7 +101,7 @@ def test_object_to_self_read_from_cloud(
     runner.run(small_sky_soap_args, dask_client)
 
     ## Check that the association data can be parsed as a valid association catalog.
-    catalog = AssociationCatalog.read_hats(small_sky_soap_args.catalog_path)
+    catalog = read_hats(small_sky_soap_args.catalog_path)
     assert catalog.on_disk
     assert catalog.catalog_path == small_sky_soap_args.catalog_path
     assert len(catalog.get_join_pixels()) == 4

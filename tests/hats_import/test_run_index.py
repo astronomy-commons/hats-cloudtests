@@ -1,6 +1,6 @@
 import hats_import.index.run_index as runner
 import pyarrow as pa
-from hats.catalog.dataset.dataset import Dataset
+from hats import read_hats
 from hats.io.file_io import read_parquet_metadata
 from hats_import.index.arguments import IndexArguments
 
@@ -25,7 +25,7 @@ def test_run_index(
     runner.run(args, dask_client)
 
     # Check that the catalog metadata file exists
-    catalog = Dataset.read_hats(args.catalog_path)
+    catalog = read_hats(args.catalog_path)
     assert catalog.on_disk
     assert catalog.catalog_path == args.catalog_path
 
@@ -67,7 +67,7 @@ def test_run_index_read_from_cloud(small_sky_order1_dir_cloud, tmp_path, dask_cl
     runner.run(args, dask_client)
 
     # Check that the catalog metadata file exists
-    catalog = Dataset.read_hats(args.catalog_path)
+    catalog = read_hats(args.catalog_path)
     assert catalog.on_disk
     assert catalog.catalog_path == args.catalog_path
 
