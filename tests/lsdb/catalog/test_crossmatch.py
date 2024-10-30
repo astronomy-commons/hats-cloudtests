@@ -21,9 +21,8 @@ def test_crossmatch_with_margin(
     small_sky_margin_dir_cloud,
     xmatch_with_margin,
 ):
-    small_sky_margin_catalog = lsdb.read_hats(small_sky_margin_dir_cloud)
     small_sky_order1_catalog = lsdb.read_hats(
-        small_sky_order1_dir_cloud, margin_cache=small_sky_margin_catalog
+        small_sky_order1_dir_cloud, margin_cache=small_sky_margin_dir_cloud
     )
     small_sky_xmatch_catalog = lsdb.read_hats(small_sky_xmatch_dir_cloud)
     xmatched = small_sky_xmatch_catalog.crossmatch(
