@@ -1,10 +1,13 @@
 import numpy as np
 import pandas as pd
+from hats.io import paths
 from hats.io.file_io import (
     load_csv_to_pandas,
     load_text_file,
+    read_fits_image,
     read_parquet_file_to_pandas,
     write_dataframe_to_csv,
+    write_fits_image,
     write_string_to_file,
 )
 from hats.io.paths import pixel_catalog_file
@@ -34,3 +37,12 @@ def test_write_df_to_csv(tmp_cloud_path):
     write_dataframe_to_csv(random_df, test_file_path, index=False)
     loaded_df = load_csv_to_pandas(test_file_path)
     pd.testing.assert_frame_equal(loaded_df, random_df)
+
+
+def test_write_point_map_roundtrip(small_sky_dir_cloud, tmp_cloud_path):
+    """Test the reading/writing of a catalog point map"""
+    expected_counts_skymap = read_fits_image(paths.get_point_map_file_pointer(small_sky_dir_cloud))
+    output_map_pointer = paths.get_point_map_file_pointer(tmp_cloud_path)
+    write_fits_image(expected_counts_skymap, output_map_pointer)
+    counts_skymap = read_fits_image(output_map_pointer)
+    np.testing.assert_array_equal(counts_skymap, expected_counts_skymap)
