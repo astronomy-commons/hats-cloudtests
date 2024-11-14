@@ -3,6 +3,7 @@ import pandas as pd
 from hats.io import paths
 from hats.io.file_io import (
     load_csv_to_pandas,
+    load_csv_to_pandas_generator,
     load_text_file,
     read_fits_image,
     read_parquet_file_to_pandas,
@@ -37,6 +38,17 @@ def test_write_df_to_csv(tmp_cloud_path):
     write_dataframe_to_csv(random_df, test_file_path, index=False)
     loaded_df = load_csv_to_pandas(test_file_path)
     pd.testing.assert_frame_equal(loaded_df, random_df)
+
+
+def test_load_csv_to_pandas_generator_encoding(tmp_cloud_path):
+    path = tmp_cloud_path / "koi8-r.csv"
+    with path.open(encoding="koi8-r", mode="w") as fh:
+        fh.write("col1,col2\nыыы,яяя\n")
+    num_reads = 0
+    for frame in load_csv_to_pandas_generator(path, chunksize=7, encoding="koi8-r"):
+        assert len(frame) == 1
+        num_reads += 1
+    assert num_reads == 1
 
 
 def test_write_point_map_roundtrip(small_sky_dir_cloud, tmp_cloud_path):
