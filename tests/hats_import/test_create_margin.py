@@ -1,4 +1,5 @@
 import hats_import.margin_cache.margin_cache as mc
+import pytest
 from hats import read_hats
 from hats_import.margin_cache.margin_cache_arguments import MarginCacheArguments
 
@@ -64,3 +65,16 @@ def test_margin_cache_gen_read_from_cloud(
     catalog = read_hats(args.catalog_path)
     assert catalog.on_disk
     assert catalog.catalog_path == args.catalog_path
+
+
+def test_no_margin_cache_overwrite(small_sky_order1_dir_cloud):
+    """Runner should refuse to generate margin cache which overwrites valid catalog"""
+    catalog_dir = small_sky_order1_dir_cloud.parent
+    catalog_name = small_sky_order1_dir_cloud.name
+    with pytest.raises(ValueError, match="already contains a valid catalog"):
+        MarginCacheArguments(
+            input_catalog_path=small_sky_order1_dir_cloud,
+            output_path=catalog_dir,
+            margin_threshold=10.0,
+            output_artifact_name=catalog_name,
+        )
