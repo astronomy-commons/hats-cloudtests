@@ -1,9 +1,5 @@
-from pathlib import Path
-
-import pandas as pd
-import pytest
-
 import hats_import.verification.run_verification as runner
+import pandas as pd
 from hats_import.verification.arguments import VerificationArguments
 
 
