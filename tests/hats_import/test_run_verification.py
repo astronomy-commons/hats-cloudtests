@@ -11,5 +11,5 @@ def test_runner(small_sky_dir_cloud, tmp_path):
     verifier = runner.run(args, write_mode="w")
     all_passed = verifier.results_df.passed.all()
     assert all_passed, "good catalog failed"
-    written_results = pd.read_csv(args.output_path / args.output_filename)
+    written_results = pd.read_csv(args.output_path / args.output_filename, comment="#")
     assert written_results[result_cols].equals(verifier.results_df[result_cols]), "report failed"
