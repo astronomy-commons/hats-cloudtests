@@ -12,6 +12,11 @@ import shortuuid
 from hats.io.file_io import file_io
 from upath import UPath
 
+import logging
+import boto3
+logging.basicConfig(level=logging.ERROR)
+boto3.set_stream_logger(name='botocore')
+
 from hats_cloudtests.temp_cloud_directory import TempCloudDirectory
 
 SMALL_SKY_XMATCH_NAME = "small_sky_xmatch"
@@ -37,20 +42,31 @@ def cloud(request):
 
 @pytest.fixture(scope="session", name="s3_server")
 def s3_server(cloud):
+    yield from create_s3_server(cloud, anon=False, port=5555)
+
+
+@pytest.fixture(scope="session", name="s3_anon_server")
+def s3_anon_server(cloud):
+    yield from create_s3_server(cloud, anon=True, port=5556)
+
+
+def create_s3_server(cloud, anon, port):
     if cloud != "local_s3":
         yield {}
+
     # writable local S3 system
     os.environ["BOTO_CONFIG"] = "/dev/null"
-    os.environ["AWS_ACCESS_KEY_ID"] = "testing"
-    os.environ["AWS_SECRET_ACCESS_KEY"] = "testing"
-    os.environ["AWS_SECURITY_TOKEN"] = "testing"
-    os.environ["AWS_SESSION_TOKEN"] = "testing"
     os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
-    requests = pytest.importorskip("requests")
 
+    if not anon:
+        os.environ["AWS_ACCESS_KEY_ID"] = "testing"
+        os.environ["AWS_SECRET_ACCESS_KEY"] = "testing"
+        os.environ["AWS_SECURITY_TOKEN"] = "testing"
+        os.environ["AWS_SESSION_TOKEN"] = "testing"
+
+    requests = pytest.importorskip("requests")
     pytest.importorskip("moto")
 
-    port = 5555
     endpoint_uri = f"http://127.0.0.1:{port}/"
     # pylint: disable=consider-using-with
     proc = subprocess.Popen(
@@ -72,7 +88,7 @@ def s3_server(cloud):
         s3so = {
             "client_kwargs": {"endpoint_url": endpoint_uri},
             "use_listings_cache": True,
-            "anon": False,
+            "anon": anon,
         }
         yield s3so
     finally:
@@ -87,26 +103,37 @@ def cloud_path(cloud, s3_server, local_cloud_data_dir):
             "account_name": os.environ.get("ABFS_LINCCDATA_ACCOUNT_NAME"),
             "account_key": os.environ.get("ABFS_LINCCDATA_ACCOUNT_KEY"),
         }
-
         root_dir = UPath("abfs://hipscat/pytests/", protocol="abfs", **storage_options)
         assert root_dir.exists()
         return root_dir
-
     if cloud == "local_s3":
-        s3so = s3_server
-        s3 = fsspec.filesystem("s3", **s3so)
-        bucket_name = "test_bucket"
-        s3.mkdir(bucket_name)
-        for x in Path(local_cloud_data_dir).glob("**/*"):
-            target_path = f"{bucket_name}/{x.relative_to(local_cloud_data_dir)}"
-            if x.is_file():
-                s3.upload(str(x), target_path)
-        s3.invalidate_cache()
-        root_dir = UPath(f"{bucket_name}", protocol="s3", **s3so)
+        root_dir = copy_contents_to_bucket(s3_server, local_cloud_data_dir)
         assert root_dir.exists()
         return root_dir
-
     raise NotImplementedError("Cloud format not implemented for tests!")
+
+
+@pytest.fixture(scope="session", name="cloud_anon_path")
+def cloud_anon_path(cloud, s3_anon_server, local_cloud_data_dir):
+    if cloud == "local_s3":
+        root_dir = copy_contents_to_bucket(s3_anon_server, local_cloud_data_dir)
+        assert root_dir.exists()
+        return root_dir
+    raise NotImplementedError("Cloud format not implemented for tests!")
+
+
+def copy_contents_to_bucket(s3so, local_cloud_data_dir):
+    bucket_name = "test_bucket"
+    s3 = fsspec.filesystem("s3", **s3so)
+    s3.mkdir(bucket_name)
+    for x in Path(local_cloud_data_dir).glob("**/*"):
+        target_path = f"{bucket_name}/{x.relative_to(local_cloud_data_dir)}"
+        if x.is_file():
+            s3.upload(str(x), target_path)
+    s3.invalidate_cache()
+    root_dir = UPath(f"{bucket_name}", protocol="s3", **s3so)
+    assert root_dir.exists()
+    return root_dir
 
 
 @pytest.fixture(scope="session", name="storage_options")
@@ -121,7 +148,6 @@ def storage_options(cloud, s3_server):
         s3so = s3_server
         s3so["protocol"] = "s3"
         return s3so
-
     return {}
 
 
@@ -165,6 +191,11 @@ def almanac_dir_cloud(cloud_path):
 @pytest.fixture
 def small_sky_dir_cloud(cloud_path):
     return cloud_path / "data" / SMALL_SKY_DIR_NAME
+
+
+@pytest.fixture
+def small_sky_dir_cloud_anon(cloud_anon_path):
+    return cloud_anon_path / "data" / SMALL_SKY_DIR_NAME
 
 
 @pytest.fixture
