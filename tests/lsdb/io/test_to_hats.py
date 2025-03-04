@@ -1,7 +1,9 @@
 import lsdb
 import pandas as pd
+import pytest
 
 
+@pytest.mark.write_to_cloud
 def test_save_catalog_and_margin(local_data_dir, tmp_cloud_path):
     pathway = local_data_dir / "xmatch" / "xmatch_catalog_raw.csv"
     input_df = pd.read_csv(pathway)

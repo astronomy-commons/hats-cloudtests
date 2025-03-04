@@ -50,6 +50,8 @@ build-backend = "setuptools.build_meta"
 [tool.pytest.ini_options]
 markers = [
     "dask: mark tests as having a dask client runtime dependency",
+    "write_to_cloud: test writes to cloud - skipped for read-only file system testing",
+    "requires_range: test requires a range request - skipped FOR NOW for http",
 ]
 [tool.black]
 line-length = 110

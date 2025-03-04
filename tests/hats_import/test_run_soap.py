@@ -5,6 +5,7 @@ from hats.io.file_io import read_parquet_metadata
 from hats_import.soap.arguments import SoapArguments
 
 
+@pytest.mark.write_to_cloud
 @pytest.mark.dask
 def test_object_to_self_write_to_cloud(
     dask_client,

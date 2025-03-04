@@ -1,10 +1,12 @@
 import hats_import.index.run_index as runner
 import pyarrow as pa
+import pytest
 from hats import read_hats
 from hats.io.file_io import read_parquet_metadata
 from hats_import.index.arguments import IndexArguments
 
 
+@pytest.mark.write_to_cloud
 def test_run_index(
     small_sky_order1_dir_local,
     tmp_path,

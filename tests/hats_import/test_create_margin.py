@@ -4,6 +4,7 @@ from hats import read_hats
 from hats_import.margin_cache.margin_cache_arguments import MarginCacheArguments
 
 
+@pytest.mark.write_to_cloud
 def test_margin_cache_gen(
     small_sky_order1_dir_local,
     tmp_path,
