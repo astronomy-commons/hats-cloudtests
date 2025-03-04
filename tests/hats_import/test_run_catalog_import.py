@@ -9,6 +9,7 @@ from hats_import.catalog.file_readers import CsvReader
 from hats_cloudtests import assert_parquet_file_ids
 
 
+@pytest.mark.write_to_cloud
 @pytest.mark.dask
 def test_catalog_import_write_to_cloud(
     dask_client,

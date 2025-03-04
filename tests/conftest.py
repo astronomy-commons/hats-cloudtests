@@ -35,10 +35,45 @@ def cloud(request):
     return request.config.getoption("--cloud")
 
 
+@pytest.fixture(scope="session", name="http_server")
+def http_server(cloud, local_cloud_data_dir):
+    if cloud != "http":
+        yield None
+        return
+
+    requests = pytest.importorskip("requests")
+    # pylint: disable=consider-using-with
+    proc = subprocess.Popen(
+        shlex.split(f"python -m http.server -d {local_cloud_data_dir}"),
+        stderr=subprocess.DEVNULL,
+        stdout=subprocess.DEVNULL,
+    )
+    endpoint_uri = "http://0.0.0.0:8000/"
+    try:
+        # print("starting server at", endpoint_uri)
+        timeout = 5
+        while timeout > 0:
+            # print("checking server alive")
+            try:
+                r = requests.get(endpoint_uri, timeout=10)
+                if r.ok:
+                    break
+            except Exception:  # pylint: disable=broad-except
+                pass
+            timeout -= 0.1
+            time.sleep(0.1)
+        yield endpoint_uri
+    finally:
+        # print("tearing down server")
+        proc.terminate()
+        proc.wait()
+
+
 @pytest.fixture(scope="session", name="s3_server")
 def s3_server(cloud):
     if cloud != "local_s3":
         yield {}
+        return
     # writable local S3 system
     os.environ["BOTO_CONFIG"] = "/dev/null"
     os.environ["AWS_ACCESS_KEY_ID"] = "testing"
@@ -81,7 +116,7 @@ def s3_server(cloud):
 
 
 @pytest.fixture(scope="session", name="cloud_path")
-def cloud_path(cloud, s3_server, local_cloud_data_dir):
+def cloud_path(cloud, s3_server, local_cloud_data_dir, http_server):
     if cloud == "abfs":
         storage_options = {
             "account_name": os.environ.get("ABFS_LINCCDATA_ACCOUNT_NAME"),
@@ -106,6 +141,11 @@ def cloud_path(cloud, s3_server, local_cloud_data_dir):
         assert root_dir.exists()
         return root_dir
 
+    if cloud == "http":
+        root_dir = UPath(http_server)
+        assert root_dir.exists()
+        return root_dir
+
     raise NotImplementedError("Cloud format not implemented for tests!")
 
 
@@ -122,7 +162,21 @@ def storage_options(cloud, s3_server):
         s3so["protocol"] = "s3"
         return s3so
 
-    return {}
+    return None
+
+
+def pytest_collection_modifyitems(session, items):
+    """Add SKIP directive to tests that will write to cloud IF running
+    tests against a read-only file system (e.g. HTTP)"""
+    cloud = session.config.getoption("--cloud")
+    if cloud in ("http"):
+        skip_write = pytest.mark.skip(reason="Skipping write tests for read-only file system.")
+        skip_range = pytest.mark.skip(reason="Skipping index tests for non-range reads.")
+        for item in items:
+            for _ in item.iter_markers(name="write_to_cloud"):
+                item.add_marker(skip_write)
+            for _ in item.iter_markers(name="requires_range"):
+                item.add_marker(skip_range)
 
 
 @pytest.fixture(scope="session")
@@ -185,6 +239,11 @@ def small_sky_margin_dir_cloud(cloud_path):
 @pytest.fixture(scope="session", name="tmp_dir_cloud")
 def tmp_dir_cloud(cloud_path, cloud):
     """Create a single client for use by all unit test cases."""
+    ## Read-only filesystem
+    if cloud in ("http"):
+        yield None
+        return
+
     real_directories = True
     if cloud in ("local_s3"):
         real_directories = False
@@ -229,6 +288,11 @@ def small_sky_order1_hats_catalog_cloud(small_sky_order1_dir_cloud):
 @pytest.fixture
 def small_sky_order1_catalog_cloud(small_sky_order1_dir_cloud):
     return lsdb.read_hats(small_sky_order1_dir_cloud)
+
+
+# @pytest.fixture
+# def small_sky_npix_as_dir_cloud(cloud_path):
+#     return cloud_path / "data" / "small_sky_npix_as_dir"
 
 
 @pytest.fixture
