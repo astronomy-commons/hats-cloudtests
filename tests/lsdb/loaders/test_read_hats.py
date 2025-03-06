@@ -19,6 +19,8 @@ def test_read_hats_margin(small_sky_margin_dir_cloud):
     assert catalog.hc_structure.catalog_base_dir == small_sky_margin_dir_cloud
     assert catalog.get_healpix_pixels() == [
         HealpixPixel(0, 4),
+        HealpixPixel(0, 7),
+        HealpixPixel(0, 8),
         HealpixPixel(1, 44),
         HealpixPixel(1, 45),
         HealpixPixel(1, 46),
