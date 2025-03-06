@@ -23,12 +23,11 @@ def test_write_string_to_file(tmp_cloud_path):
     assert data[0] == test_string
 
 
-def test_read_parquet_to_pandas(small_sky_catalog_cloud, small_sky_dir_local, small_sky_dir_cloud):
+def test_read_parquet_to_pandas(small_sky_dir_local, small_sky_dir_cloud):
     pixel_data_path = pixel_catalog_file(small_sky_dir_local, HealpixPixel(0, 11))
     pixel_data_path_cloud = pixel_catalog_file(small_sky_dir_cloud, HealpixPixel(0, 11))
     parquet_df = pd.read_parquet(pixel_data_path)
-    catalog_schema = small_sky_catalog_cloud.hc_structure.schema
-    loaded_df = read_parquet_file_to_pandas(pixel_data_path_cloud, schema=catalog_schema)
+    loaded_df = read_parquet_file_to_pandas(pixel_data_path_cloud)
     pd.testing.assert_frame_equal(parquet_df, loaded_df)
 
 

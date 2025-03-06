@@ -13,6 +13,7 @@ from hats.io.parquet_metadata import write_parquet_metadata
 def basic_catalog_parquet_metadata():
     return pa.schema(
         [
+            pa.field("_healpix_29", pa.int64()),
             pa.field("id", pa.int64()),
             pa.field("ra", pa.float64()),
             pa.field("dec", pa.float64()),
@@ -21,7 +22,6 @@ def basic_catalog_parquet_metadata():
             pa.field("Norder", pa.uint8()),
             pa.field("Dir", pa.uint64()),
             pa.field("Npix", pa.uint64()),
-            pa.field("_healpix_29", pa.int64()),
         ]
     )
 

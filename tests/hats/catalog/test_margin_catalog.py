@@ -9,9 +9,11 @@ def test_read_margin_from_file(small_sky_margin_dir_cloud):
     assert isinstance(catalog, MarginCatalog)
     assert catalog.on_disk
     assert catalog.catalog_path == small_sky_margin_dir_cloud
-    assert len(catalog.get_healpix_pixels()) == 5
+    assert len(catalog.get_healpix_pixels()) == 7
     assert catalog.get_healpix_pixels() == [
         HealpixPixel(0, 4),
+        HealpixPixel(0, 7),
+        HealpixPixel(0, 8),
         HealpixPixel(1, 44),
         HealpixPixel(1, 45),
         HealpixPixel(1, 46),

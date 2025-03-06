@@ -232,6 +232,11 @@ def small_sky_order1_catalog_cloud(small_sky_order1_dir_cloud):
 
 
 @pytest.fixture
+def small_sky_npix_as_dir_cloud(cloud_path):
+    return cloud_path / "data" / "small_sky_npix_as_dir"
+
+
+@pytest.fixture
 def xmatch_correct_cloud(local_data_dir):
     pathway = local_data_dir / "xmatch" / XMATCH_CORRECT_FILE
     return file_io.load_csv_to_pandas(pathway)
