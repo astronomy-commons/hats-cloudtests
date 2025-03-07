@@ -26,6 +26,7 @@ def basic_catalog_parquet_metadata():
     )
 
 
+@pytest.mark.write_to_cloud
 def test_write_parquet_metadata(tmp_cloud_path, small_sky_dir_cloud, basic_catalog_parquet_metadata):
     """Use existing catalog parquet files and create new metadata files for it"""
     catalog_base_dir = tmp_cloud_path
@@ -69,6 +70,7 @@ def check_parquet_schema(file_path, expected_schema, expected_num_row_groups=1):
             assert column_metadata.file_path.endswith(".parquet")
 
 
+@pytest.mark.write_to_cloud
 def test_read_write_fits_point_map(tmp_cloud_path):
     """Check that we write and can read a FITS file for spatial distribution."""
     initial_histogram = hist.empty_histogram(1)

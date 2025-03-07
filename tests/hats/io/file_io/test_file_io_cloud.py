@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import pytest
 from hats.io import paths
 from hats.io.file_io import (
     load_csv_to_pandas,
@@ -31,6 +32,7 @@ def test_read_parquet_to_pandas(small_sky_dir_local, small_sky_dir_cloud):
     pd.testing.assert_frame_equal(parquet_df, loaded_df)
 
 
+@pytest.mark.write_to_cloud
 def test_write_df_to_csv(tmp_cloud_path):
     random_df = pd.DataFrame(np.random.randint(0, 100, size=(100, 4)), columns=list("ABCD"))
     test_file_path = tmp_cloud_path / "test.csv"
@@ -39,6 +41,7 @@ def test_write_df_to_csv(tmp_cloud_path):
     pd.testing.assert_frame_equal(loaded_df, random_df)
 
 
+@pytest.mark.write_to_cloud
 def test_load_csv_to_pandas_generator_encoding(tmp_cloud_path):
     path = tmp_cloud_path / "koi8-r.csv"
     with path.open(encoding="koi8-r", mode="w") as fh:
@@ -50,6 +53,7 @@ def test_load_csv_to_pandas_generator_encoding(tmp_cloud_path):
     assert num_reads == 1
 
 
+@pytest.mark.write_to_cloud
 def test_write_point_map_roundtrip(small_sky_dir_cloud, tmp_cloud_path):
     """Test the reading/writing of a catalog point map"""
     expected_counts_skymap = read_fits_image(paths.get_point_map_file_pointer(small_sky_dir_cloud))

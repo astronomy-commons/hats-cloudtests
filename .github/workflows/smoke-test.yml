@@ -40,6 +40,9 @@ jobs:
     - name: Run local s3 with pytest
       run: |
         python -m pytest tests --cloud local_s3
+    - name: Run local http with pytest
+      run: |
+        python -m pytest tests --cloud http
     # - name: Run ABFS unit tests with pytest
     #   run: |
     #     python -m pytest tests --cloud abfs

@@ -1,6 +1,8 @@
+import pytest
 from hats import read_hats
 
 
+@pytest.mark.requires_range
 def test_index_search(small_sky_order1_catalog_cloud, small_sky_index_dir_cloud):
     catalog_index = read_hats(small_sky_index_dir_cloud)
 
