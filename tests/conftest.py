@@ -27,7 +27,7 @@ SMALL_SKY_DIR_NAME = "small_sky"
 
 
 def pytest_addoption(parser):
-    parser.addoption("--cloud", action="store", default="local_s3")
+    parser.addoption("--cloud", action="store")
 
 
 @pytest.fixture(scope="session", name="cloud")
@@ -166,6 +166,10 @@ def pytest_collection_modifyitems(session, items):
     """Add SKIP directive to tests that will write to cloud IF running
     tests against a read-only file system (e.g. HTTP)"""
     cloud = session.config.getoption("--cloud")
+    if not cloud:
+        pytest.exit("FAIL: --cloud option is required")
+    if cloud not in ["local_s3", "http", "abfs"]:
+        pytest.exit(f"FAIL: Unsupported cloud type: {cloud}")
     if cloud in ("http"):
         skip_write = pytest.mark.skip(reason="Skipping write tests for read-only file system.")
         skip_range = pytest.mark.skip(reason="Skipping index tests for non-range reads.")

@@ -15,7 +15,7 @@ from hats.io.file_io import (
 from hats.io.paths import pixel_catalog_file
 from hats.pixel_math.healpix_pixel import HealpixPixel
 
-
+@pytest.mark.write_to_cloud
 def test_write_string_to_file(tmp_cloud_path):
     test_file_path = tmp_cloud_path / "text_file.txt"
     test_string = "this is a test"
