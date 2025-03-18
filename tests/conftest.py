@@ -27,6 +27,7 @@ SMALL_SKY_DIR_NAME = "small_sky"
 
 ALL_CLOUDS = ["abfs", "local_s3", "http"]
 
+
 def pytest_addoption(parser):
     parser.addoption("--cloud", action="store", choices=ALL_CLOUDS)
 

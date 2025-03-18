@@ -9,9 +9,11 @@ from hats.io import file_io
 from hats.io.parquet_metadata import write_parquet_metadata
 
 
-@pytest.fixture
-def basic_catalog_parquet_metadata():
-    return pa.schema(
+@pytest.mark.write_to_cloud
+def test_write_parquet_metadata(tmp_cloud_path, small_sky_dir_cloud):
+    """Use existing catalog parquet files and create new metadata files for it"""
+
+    basic_catalog_parquet_metadata = pa.schema(
         [
             pa.field("_healpix_29", pa.int64()),
             pa.field("id", pa.int64()),
@@ -19,16 +21,9 @@ def basic_catalog_parquet_metadata():
             pa.field("dec", pa.float64()),
             pa.field("ra_error", pa.int64()),
             pa.field("dec_error", pa.int64()),
-            pa.field("Norder", pa.uint8()),
-            pa.field("Dir", pa.uint64()),
-            pa.field("Npix", pa.uint64()),
         ]
     )
 
-
-@pytest.mark.write_to_cloud
-def test_write_parquet_metadata(tmp_cloud_path, small_sky_dir_cloud, basic_catalog_parquet_metadata):
-    """Use existing catalog parquet files and create new metadata files for it"""
     catalog_base_dir = tmp_cloud_path
     dataset_dir = catalog_base_dir / "dataset"
 
