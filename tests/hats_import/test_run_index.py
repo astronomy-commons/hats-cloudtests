@@ -35,7 +35,6 @@ def test_run_index(
         [
             pa.field("_healpix_29", pa.int64()),
             pa.field("Norder", pa.uint8()),
-            pa.field("Dir", pa.uint64()),
             pa.field("Npix", pa.uint64()),
             pa.field("id", pa.int64()),
         ]
@@ -77,7 +76,6 @@ def test_run_index_read_from_cloud(small_sky_order1_dir_cloud, tmp_path, dask_cl
         [
             pa.field("_healpix_29", pa.int64()),
             pa.field("Norder", pa.uint8()),
-            pa.field("Dir", pa.uint64()),
             pa.field("Npix", pa.uint64()),
             pa.field("id", pa.int64()),
         ]

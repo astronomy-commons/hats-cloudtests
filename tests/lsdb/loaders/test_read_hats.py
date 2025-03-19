@@ -36,4 +36,4 @@ def test_read_hats_npix_as_dir(small_sky_npix_as_dir_cloud):
     # Show that the catalog can be read as expected.
     assert isinstance(catalog, lsdb.Catalog)
     assert catalog.hc_structure.catalog_info.total_rows == len(catalog)
-    assert len(catalog.compute().columns) == 8
+    assert len(catalog.compute().columns) == 5
