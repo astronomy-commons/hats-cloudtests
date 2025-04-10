@@ -17,7 +17,6 @@ from hats_cloudtests.temp_cloud_directory import TempCloudDirectory
 SMALL_SKY_XMATCH_NAME = "small_sky_xmatch"
 XMATCH_CORRECT_FILE = "xmatch_correct.csv"
 
-ALMANAC_DIR_NAME = "almanac"
 SMALL_SKY_DIR_NAME = "small_sky"
 SMALL_SKY_ORDER1_DIR_NAME = "small_sky_order1"
 
@@ -212,11 +211,6 @@ def small_sky_parts_dir_local(local_data_dir):
 @pytest.fixture
 def test_data_dir_cloud(cloud_path):
     return cloud_path / "data"
-
-
-@pytest.fixture
-def almanac_dir_cloud(cloud_path):
-    return cloud_path / "data" / ALMANAC_DIR_NAME
 
 
 @pytest.fixture
