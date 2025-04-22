@@ -53,6 +53,13 @@ markers = [
     "write_to_cloud: test writes to cloud - skipped for read-only file system testing",
     "requires_range: test requires a range request - skipped FOR NOW for http",
 ]
+testpaths = [
+    "tests",
+    "src",
+    "docs",
+]
+addopts = "--doctest-modules --doctest-glob=*.rst"
+
 [tool.black]
 line-length = 110
 target-version = ["py310"]
