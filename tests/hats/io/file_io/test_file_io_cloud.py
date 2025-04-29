@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import nested_pandas as npd
 import pytest
 from hats.io import paths
 from hats.io.file_io import (
@@ -28,10 +29,8 @@ def test_write_string_to_file(tmp_cloud_path):
 def test_read_parquet_to_pandas(small_sky_dir_local, small_sky_dir_cloud):
     pixel_data_path = pixel_catalog_file(small_sky_dir_local, HealpixPixel(0, 11))
     pixel_data_path_cloud = pixel_catalog_file(small_sky_dir_cloud, HealpixPixel(0, 11))
-    parquet_df = pd.read_parquet(pixel_data_path, dtype_backend="pyarrow")
+    parquet_df = npd.read_parquet(pixel_data_path)
     loaded_df = read_parquet_file_to_pandas(pixel_data_path_cloud)
-    print(parquet_df)
-    print(loaded_df)
     pd.testing.assert_frame_equal(parquet_df, loaded_df)
 
 
