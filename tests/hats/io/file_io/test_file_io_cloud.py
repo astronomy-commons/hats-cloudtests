@@ -45,6 +45,7 @@ def test_write_df_to_csv(tmp_cloud_path):
 
 @pytest.mark.write_to_cloud
 def test_load_csv_to_pandas_generator_encoding(tmp_cloud_path):
+    #test
     path = tmp_cloud_path / "koi8-r.csv"
     with path.open(encoding="koi8-r", mode="w") as fh:
         fh.write("col1,col2\nыыы,яяя\n")
