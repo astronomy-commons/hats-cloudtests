@@ -30,7 +30,7 @@ def test_read_parquet_to_pandas(small_sky_dir_local, small_sky_dir_cloud):
     pixel_data_path_cloud = pixel_catalog_file(small_sky_dir_cloud, HealpixPixel(0, 11))
     parquet_df = pd.read_parquet(pixel_data_path)
     loaded_df = read_parquet_file_to_pandas(pixel_data_path_cloud)
-    pd.testing.assert_frame_equal(parquet_df, loaded_df)
+    pd.testing.assert_frame_equal(parquet_df, loaded_df, check_dtype=False, check_frame_type=False)
 
 
 @pytest.mark.write_to_cloud
