@@ -1,0 +1,5 @@
+gcs://raw/small_sky_parts/catalog_00_of_05.csv
+gcs://raw/small_sky_parts/catalog_01_of_05.csv
+gcs://raw/small_sky_parts/catalog_02_of_05.csv
+gcs://raw/small_sky_parts/catalog_03_of_05.csv
+gcs://raw/small_sky_parts/catalog_04_of_05.csv

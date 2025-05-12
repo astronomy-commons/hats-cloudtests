@@ -29,12 +29,23 @@ jobs:
         python -m pip install --upgrade pip
         pip install -e .[dev]
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Run local s3 with pytest
+    # - name: Run local s3 with pytest
+    #   run: |
+    #     python -m pytest tests --cloud local_s3
+    # - name: Run local http with pytest
+    #   run: |
+    #     python -m pytest tests --cloud http
+    - name: Setup GCS emulator
+      uses: fsouza/fake-gcs-action@v0.4.1
+      with:
+        version: "1.37.2"
+        data: tests/cloud
+        public-host: "0.0.0.0:4443"
+        external-url: "http://localhost:4443"
+        scheme: http
+    - name: Run local GCS (google cloud) with pytest
       run: |
-        python -m pytest tests --cloud local_s3
-    - name: Run local http with pytest
-      run: |
-        python -m pytest tests --cloud http
+        python -m pytest tests --cloud local_gcs
     # - name: Run ABFS unit tests with pytest
     #   run: |
     #     python -m pytest tests --cloud abfs
