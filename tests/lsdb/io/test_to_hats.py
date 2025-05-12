@@ -37,4 +37,6 @@ def test_save_catalog_and_margin(local_data_dir, tmp_cloud_path):
     margin_original_info = catalog.margin.hc_structure.catalog_info
     partition_sizes = catalog.margin._ddf.map_partitions(len).compute()
     assert max(partition_sizes) == 3
-    assert expected_catalog.hc_structure.catalog_info == margin_original_info.copy_and_update(hats_max_rows="3")
+    assert expected_catalog.hc_structure.catalog_info == margin_original_info.copy_and_update(
+        hats_max_rows="3"
+    )
