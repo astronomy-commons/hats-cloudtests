@@ -24,8 +24,8 @@ SMALL_SKY_ORDER1_DIR_NAME = "small_sky_order1"
 TEST_DIR = os.path.dirname(__file__)
 SMALL_SKY_DIR_NAME = "small_sky"
 
-ALL_CLOUDS = ["abfs", "local_s3", "http"]
-
+ALL_CLOUDS = ["abfs", "local_s3", "local_gcs", "http"]
+READ_ONLY_CLOUDS = ["local_gcs", "http"]
 
 def pytest_addoption(parser):
     parser.addoption("--cloud", action="store", choices=ALL_CLOUDS)
@@ -144,6 +144,16 @@ def cloud_path(cloud, s3_server, local_cloud_data_dir, http_server):
         assert root_dir.exists()
         return root_dir
 
+    if cloud == "local_gcs":
+        root_dir = UPath(
+            "gcs://",
+            protocol="gcs",
+            endpoint_url="http://0.0.0.0:4443",
+            token="anon",
+        )
+        assert root_dir.exists()
+        return root_dir
+
     raise NotImplementedError("Cloud format not implemented for tests!")
 
 
@@ -159,6 +169,9 @@ def storage_options(cloud, s3_server):
         s3so = s3_server
         s3so["protocol"] = "s3"
         return s3so
+    if cloud == "local_gcs":
+        storage_options = {"protocol": "gcs", "endpoint_url": "http://0.0.0.0:4443", "token": "anon"}
+        return storage_options
 
     return {}
 
@@ -171,7 +184,7 @@ def pytest_collection_modifyitems(session, items):
         pytest.exit(f"FAIL: --cloud option is required (options: {ALL_CLOUDS})")
     if cloud not in ALL_CLOUDS:
         pytest.exit(f"FAIL: Unsupported cloud type: {cloud}")
-    if cloud in ("http"):
+    if cloud in READ_ONLY_CLOUDS:
         skip_write = pytest.mark.skip(reason="Skipping write tests for read-only file system.")
         skip_range = pytest.mark.skip(reason="Skipping index tests for non-range reads.")
         for item in items:
@@ -237,7 +250,7 @@ def small_sky_margin_dir_cloud(cloud_path):
 def tmp_dir_cloud(cloud_path, cloud):
     """Create a single client for use by all unit test cases."""
     ## Read-only filesystem
-    if cloud in ("http"):
+    if cloud in READ_ONLY_CLOUDS:
         yield None
         return
 
