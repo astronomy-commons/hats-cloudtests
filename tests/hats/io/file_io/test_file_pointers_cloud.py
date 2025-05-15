@@ -8,7 +8,7 @@ from hats.io.file_io import (
 
 
 def test_file_or_dir_exist(small_sky_dir_cloud):
-    assert does_file_or_directory_exist(small_sky_dir_cloud)
+    assert does_file_or_directory_exist(small_sky_dir_cloud / "properties")
 
 
 def test_is_regular_file(small_sky_dir_cloud):

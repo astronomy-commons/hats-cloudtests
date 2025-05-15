@@ -20,6 +20,7 @@ dependencies = [
     # lsdb, hats, and hats-import are built from source via requirements.txt
     "adlfs",
     "s3fs>0.5",
+    "gcsfs",
     "moto[server]",
     "shortuuid",
 ]
