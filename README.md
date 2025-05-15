@@ -66,7 +66,7 @@ sudo docker run -d -p 4443:4443 --name fake-gcs-server -v ${PWD}/tests/cloud:/da
 
 ABFS tests run against production resources on the Microsoft Azure bucket. 
 In order to run the tests, you will need to (ask someone for the real values)
-and export the following environmental variables in a command line:
+and export the following environment variables in a command line:
 
 ```bash
 export ABFS_LINCCDATA_ACCOUNT_NAME=lincc_account_name
