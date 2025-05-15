@@ -27,6 +27,7 @@ SMALL_SKY_DIR_NAME = "small_sky"
 ALL_CLOUDS = ["abfs", "local_s3", "local_gcs", "http"]
 READ_ONLY_CLOUDS = ["local_gcs", "http"]
 
+
 def pytest_addoption(parser):
     parser.addoption("--cloud", action="store", choices=ALL_CLOUDS)
 
