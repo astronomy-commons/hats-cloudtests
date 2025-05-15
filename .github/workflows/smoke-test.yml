@@ -19,8 +19,10 @@ jobs:
 
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         python-version: ['3.10', '3.11', '3.12', '3.13']
+        cloud: ['local_s3', 'local_gcs', 'http']
 
     steps:
     - uses: actions/checkout@v4
@@ -38,12 +40,26 @@ jobs:
       run: |
         pip list
     - name: Run local s3 with pytest
+      if: matrix.cloud == 'local_s3'
       run: |
         python -m pytest tests --cloud local_s3
     - name: Run local http with pytest
+      if: matrix.cloud == 'http'
       run: |
         python -m pytest tests --cloud http
-    # - name: Run ABFS unit tests with pytest
+    - name: Setup GCS emulator
+      if: matrix.cloud == 'local_gcs'
+      uses: fsouza/fake-gcs-action@v0.4.1
+      with:
+        version: "1.37.2"
+        data: tests/cloud
+        public-host: "0.0.0.0:4443"
+        external-url: "http://localhost:4443"
+        scheme: http
+    - name: Run local GCS (google cloud) with pytest
+      if: matrix.cloud == 'local_gcs'
+      run: |
+        python -m pytest tests --cloud local_gcs    # - name: Run ABFS unit tests with pytest
     #   run: |
     #     python -m pytest tests --cloud abfs
     #   env:
