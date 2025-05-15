@@ -1,10 +1,23 @@
 import pytest
-from hats_import.catalog.file_readers import IndexedCsvReader, IndexedParquetReader
+from hats_import.catalog.file_readers import (
+    CsvPyarrowReader,
+    CsvReader,
+    FitsReader,
+    IndexedCsvReader,
+    IndexedParquetReader,
+    ParquetPyarrowReader,
+    ParquetReader,
+)
 
 
 @pytest.fixture
 def local_indexed_files(cloud, local_data_dir):
     return local_data_dir / f"indexed_files_{cloud}"
+
+
+@pytest.fixture
+def raw_data_dir(cloud_path):
+    return cloud_path / "raw"
 
 
 def test_indexed_parquet_reader(storage_options, local_indexed_files):
@@ -61,3 +74,56 @@ def test_indexed_csv_reader(storage_options, local_indexed_files):
 
     assert total_chunks == 29
     assert total_len == 131
+
+
+def test_read_fits(raw_data_dir):
+    """Success case - fits file that exists being read as fits"""
+    total_chunks = 0
+    for frame in FitsReader().read(raw_data_dir / "small_sky.fits"):
+        total_chunks += 1
+        assert len(frame) == 131
+
+    assert total_chunks == 1
+
+
+def test_csv_readers(raw_data_dir):
+    """Verify we can read the csv file into a single data frame."""
+    total_chunks = 0
+    for frame in CsvReader(compression="gzip").read(raw_data_dir / "catalog.csv.gz"):
+        total_chunks += 1
+        assert len(frame) == 131
+
+    assert total_chunks == 1
+
+
+def test_csv_pyarrow_reader(raw_data_dir):
+    """Verify we can read the csv file into a single data frame."""
+    total_chunks = 0
+    total_chunks = 0
+    for frame in CsvPyarrowReader(compression="gzip").read(raw_data_dir / "catalog.csv.gz"):
+        total_chunks += 1
+        assert len(frame) == 131
+
+    assert total_chunks == 1
+
+
+def test_parquet_reader(small_sky_dir_cloud):
+    """Verify we can read the csv file into a single data frame."""
+    single_parquet = small_sky_dir_cloud / "dataset" / "Norder=0" / "Dir=0" / "Npix=11.parquet"
+    total_chunks = 0
+    for frame in ParquetReader().read(single_parquet):
+        total_chunks += 1
+        assert len(frame) == 131
+
+    assert total_chunks == 1
+
+
+def test_parquet_reader_pyarrow(small_sky_dir_cloud):
+    """Verify we can read the csv file into a single data frame."""
+    single_parquet = small_sky_dir_cloud / "dataset" / "Norder=0" / "Dir=0" / "Npix=11.parquet"
+    total_chunks = 0
+    for frame in ParquetPyarrowReader().read(single_parquet):
+        total_chunks += 1
+        assert len(frame) == 131
+
+    assert total_chunks == 1
