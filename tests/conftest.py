@@ -153,6 +153,9 @@ def cloud_path(cloud, s3_server, local_cloud_data_dir, http_server):
             token="anon",
         )
         assert root_dir.exists()
+        raw_dir = root_dir / "raw"
+        raw_dir.fs.invalidate_cache()
+        assert raw_dir.exists()
         return root_dir
 
     raise NotImplementedError("Cloud format not implemented for tests!")
@@ -193,6 +196,40 @@ def pytest_collection_modifyitems(session, items):
                 item.add_marker(skip_write)
             for _ in item.iter_markers(name="requires_range"):
                 item.add_marker(skip_range)
+
+
+@pytest.fixture(scope="session", name="tmp_dir_cloud")
+def tmp_dir_cloud(cloud_path, cloud):
+    """Create a single client for use by all unit test cases."""
+    ## Read-only filesystem
+    if cloud in READ_ONLY_CLOUDS:
+        yield None
+        return
+
+    real_directories = True
+    if cloud in ("local_s3"):
+        real_directories = False
+    tmp = TempCloudDirectory(
+        cloud_path / "tmp",
+        method_name="full_test",
+        real_directories=real_directories,
+    )
+    yield tmp.open()
+    tmp.close()
+
+
+@pytest.fixture
+def tmp_cloud_path(request, tmp_dir_cloud):
+    name = request.node.name
+    my_uuid = shortuuid.uuid()
+    # Strip out the "test_" at the beginning of each method name, make it a little
+    # shorter, and add a disambuating UUID.
+    return tmp_dir_cloud / f"{name[5:25]}_{my_uuid}"
+
+
+##   --------------------------------------------------------------------------
+##                      Just boring path stuff after this point
+##   --------------------------------------------------------------------------
 
 
 @pytest.fixture(scope="session")
@@ -245,35 +282,6 @@ def small_sky_index_dir_cloud(cloud_path):
 @pytest.fixture
 def small_sky_margin_dir_cloud(cloud_path):
     return cloud_path / "data" / "small_sky_order1_margin"
-
-
-@pytest.fixture(scope="session", name="tmp_dir_cloud")
-def tmp_dir_cloud(cloud_path, cloud):
-    """Create a single client for use by all unit test cases."""
-    ## Read-only filesystem
-    if cloud in READ_ONLY_CLOUDS:
-        yield None
-        return
-
-    real_directories = True
-    if cloud in ("local_s3"):
-        real_directories = False
-    tmp = TempCloudDirectory(
-        cloud_path / "tmp",
-        method_name="full_test",
-        real_directories=real_directories,
-    )
-    yield tmp.open()
-    tmp.close()
-
-
-@pytest.fixture
-def tmp_cloud_path(request, tmp_dir_cloud):
-    name = request.node.name
-    my_uuid = shortuuid.uuid()
-    # Strip out the "test_" at the beginning of each method name, make it a little
-    # shorter, and add a disambuating UUID.
-    return tmp_dir_cloud / f"{name[5:25]}_{my_uuid}"
 
 
 @pytest.fixture
