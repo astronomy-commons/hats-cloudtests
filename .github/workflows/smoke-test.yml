@@ -80,7 +80,7 @@ jobs:
                 "type": "header",
                 "text": {
                   "type": "plain_text",
-                  "text": "${{ github.repository }}"
+                  "text": "HATS Cloud tests: ${{ matrix.python-version }} - ${{ matrix.cloud }}"
                 }
               },
               {
