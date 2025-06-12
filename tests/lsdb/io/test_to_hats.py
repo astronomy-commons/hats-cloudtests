@@ -12,7 +12,10 @@ def test_save_catalog_and_margin(local_data_dir, tmp_cloud_path):
     )
 
     base_catalog_path = tmp_cloud_path / "new_catalog_name"
-    catalog.to_hats(base_catalog_path)
+    catalog.to_hats(
+        base_catalog_path,
+        addl_hats_properties={"obs_regime": "Optical"},
+    )
     expected_catalog = lsdb.read_hats(base_catalog_path)
     assert expected_catalog.hc_structure.catalog_name == catalog.hc_structure.catalog_name
     assert expected_catalog.get_healpix_pixels() == catalog.get_healpix_pixels()
@@ -24,7 +27,11 @@ def test_save_catalog_and_margin(local_data_dir, tmp_cloud_path):
     original_info = catalog.hc_structure.catalog_info
     partition_sizes = catalog._ddf.map_partitions(len).compute()
     assert max(partition_sizes) == 111
-    assert expected_catalog.hc_structure.catalog_info == original_info.copy_and_update(hats_max_rows="111")
+    assert expected_catalog.hc_structure.catalog_info == original_info.copy_and_update(
+        hats_max_rows="111",
+        skymap_order=8,
+        obs_regime="Optical",
+    )
 
     base_catalog_path = tmp_cloud_path / "new_margin_name"
     catalog.margin.to_hats(base_catalog_path)
