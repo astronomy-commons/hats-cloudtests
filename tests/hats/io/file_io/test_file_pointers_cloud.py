@@ -2,7 +2,6 @@ from hats.io.file_io import (
     directory_has_contents,
     does_file_or_directory_exist,
     find_files_matching_path,
-    get_directory_contents,
     is_regular_file,
 )
 
@@ -38,18 +37,3 @@ def test_find_files_matching_path_directory(small_sky_order1_dir_cloud):
 
 def test_directory_has_contents(small_sky_order1_dir_cloud):
     assert directory_has_contents(small_sky_order1_dir_cloud)
-
-
-def test_get_directory_contents(small_sky_order1_dir_cloud):
-    small_sky_contents = get_directory_contents(small_sky_order1_dir_cloud)
-
-    expected = [
-        "dataset",
-        "partition_info.csv",
-        "point_map.fits",
-        "properties",
-    ]
-
-    expected = [small_sky_order1_dir_cloud / file_name for file_name in expected]
-
-    assert small_sky_contents == expected
