@@ -324,3 +324,21 @@ def xmatch_correct_cloud(local_data_dir):
 def xmatch_with_margin(local_data_dir):
     pathway = local_data_dir / "xmatch" / "xmatch_with_margin.csv"
     return file_io.load_csv_to_pandas(pathway)
+
+
+class Helpers:
+    """Helper methods for comparing catalogs"""
+
+    # pylint: disable=too-few-public-methods
+    @staticmethod
+    def assert_catalog_info_is_correct(expected_catalog_info, catalog_info, **properties_to_update):
+        """Check that the catalog properties are similar to the expected ones."""
+        do_not_compare = {prop: None for prop in ["hats_creation_date", "hats_estsize"]}
+        expected_catalog_info = expected_catalog_info.copy_and_update(**do_not_compare)
+        catalog_info = catalog_info.copy_and_update(**(properties_to_update | do_not_compare))
+        assert expected_catalog_info == catalog_info
+
+
+@pytest.fixture
+def helpers():
+    return Helpers()

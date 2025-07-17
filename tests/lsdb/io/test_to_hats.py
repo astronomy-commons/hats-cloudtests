@@ -7,7 +7,7 @@ from hats.io.file_io import read_fits_image
 
 
 @pytest.mark.write_to_cloud
-def test_save_catalog(local_data_dir, tmp_cloud_path):
+def test_save_catalog(local_data_dir, tmp_cloud_path, helpers):
     pathway = local_data_dir / "xmatch" / "xmatch_catalog_raw.csv"
     input_df = pd.read_csv(pathway)
     catalog = lsdb.from_dataframe(
@@ -26,24 +26,28 @@ def test_save_catalog(local_data_dir, tmp_cloud_path):
     # When saving a catalog with to_hats, we update the hats_max_rows
     # to the maximum count of points per partition. In this case there
     # is only one with 111 rows, so that is the value we expect.
-    original_info = catalog.hc_structure.catalog_info
     partition_sizes = catalog._ddf.map_partitions(len).compute()
     assert max(partition_sizes) == 111
-    assert expected_catalog.hc_structure.catalog_info == original_info.copy_and_update(
+
+    helpers.assert_catalog_info_is_correct(
+        expected_catalog.hc_structure.catalog_info,
+        catalog.hc_structure.catalog_info,
         hats_max_rows="111",
         skymap_order=8,
         skymap_alt_orders=[1, 2],
         obs_regime="Optical",
     )
 
-    assert (base_catalog_path / "properties").exists()
-    assert (base_catalog_path / "hats.properties").exists()
+    main_catalog_path = base_catalog_path / "small_sky_from_dataframe"
 
-    point_map_path = base_catalog_path / "point_map.fits"
+    assert (main_catalog_path / "properties").exists()
+    assert (main_catalog_path / "hats.properties").exists()
+
+    point_map_path = main_catalog_path / "point_map.fits"
     assert point_map_path.exists()
     histogram = read_fits_image(point_map_path)
 
-    skymap_path = base_catalog_path / "skymap.fits"
+    skymap_path = main_catalog_path / "skymap.fits"
     assert skymap_path.exists()
     skymap_histogram = read_fits_image(skymap_path)
 
@@ -51,10 +55,10 @@ def test_save_catalog(local_data_dir, tmp_cloud_path):
     assert len(catalog) == np.sum(skymap_histogram)
     npt.assert_array_equal(histogram, skymap_histogram)
 
-    skymap_path = base_catalog_path / "skymap.1.fits"
+    skymap_path = main_catalog_path / "skymap.1.fits"
     assert skymap_path.exists()
 
-    skymap_path = base_catalog_path / "skymap.2.fits"
+    skymap_path = main_catalog_path / "skymap.2.fits"
     assert skymap_path.exists()
 
     new_catalog = lsdb.open_catalog(base_catalog_path)
