@@ -1,16 +1,47 @@
-"""Two sample benchmarks to compute runtime and memory usage.
-
-For more information on writing benchmarks:
-https://asv.readthedocs.io/en/stable/writing_benchmarks.html."""
-
-from hats_cloudtests import example_benchmarks
+import lsdb
 
 
-def time_computation():
-    """Time computations are prefixed with 'time'."""
-    example_benchmarks.runtime_computation()
+class BenchmarksHTTP:
+    """Benchmark LSDB operations via HTTP."""
+
+    timeout = 120
+    rounds = 1
+    repeat = 2
+    number = 1
+
+    def setup(self):
+        # pylint: disable=attribute-defined-outside-init
+        self.gaia = lsdb.open_catalog(
+            "https://data.lsdb.io/hats/gaia_dr3",
+            search_filter=lsdb.PixelSearch([(6, 29070)]),
+            columns=["source_id", "ra", "dec"],
+        )
+
+    def time_gaia(self):
+        self.gaia.compute()
+
+    def peakmem_gaia(self):
+        self.gaia.compute()
 
 
-def mem_list():
-    """Memory computations are prefixed with 'mem' or 'peakmem'."""
-    return example_benchmarks.memory_computation()
+class BenchmarksS3:
+    """Benchmark LSDB operations via S3."""
+
+    timeout = 120
+    rounds = 1
+    repeat = 2
+    number = 1
+
+    def setup(self):
+        # pylint: disable=attribute-defined-outside-init
+        self.euclid = lsdb.open_catalog(
+            "s3://nasa-irsa-euclid-q1/contributed/q1/merged_objects/hats",
+            search_filter=lsdb.PixelSearch([(6, 16045)]),
+            columns=["object_id", "ra", "dec"],
+        )
+
+    def time_euclid(self):
+        self.euclid.compute()
+
+    def peakmem_euclid(self):
+        self.euclid.compute()
