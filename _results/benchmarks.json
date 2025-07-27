@@ -1,26 +1,54 @@
 {
-    "benchmarks.mem_list": {
-        "code": "def mem_list():\n    \"\"\"Memory computations are prefixed with 'mem' or 'peakmem'.\"\"\"\n    return example_benchmarks.memory_computation()",
-        "name": "benchmarks.mem_list",
+    "benchmarks.BenchmarksHTTP.peakmem_gaia": {
+        "code": "class BenchmarksHTTP:\n    def peakmem_gaia(self):\n        self.gaia.compute()\n\n    def setup(self):\n        # pylint: disable=attribute-defined-outside-init\n        self.gaia = lsdb.open_catalog(\n            \"https://data.lsdb.io/hats/gaia_dr3\",\n            search_filter=lsdb.PixelSearch([(6, 29070)]),\n            columns=[\"source_id\", \"ra\", \"dec\"],\n        )",
+        "name": "benchmarks.BenchmarksHTTP.peakmem_gaia",
         "param_names": [],
         "params": [],
-        "type": "memory",
+        "timeout": 120,
+        "type": "peakmemory",
         "unit": "bytes",
-        "version": "a31e7e31a99db6599fc29032ea5a3cb9782922117f13e122a69c2745a93c3d32"
+        "version": "e0054c3ecf917dda571e96657bfe9c18618afa15fbac4a38086470eb298ececc"
     },
-    "benchmarks.time_computation": {
-        "code": "def time_computation():\n    \"\"\"Time computations are prefixed with 'time'.\"\"\"\n    example_benchmarks.runtime_computation()",
+    "benchmarks.BenchmarksHTTP.time_gaia": {
+        "code": "class BenchmarksHTTP:\n    def time_gaia(self):\n        self.gaia.compute()\n\n    def setup(self):\n        # pylint: disable=attribute-defined-outside-init\n        self.gaia = lsdb.open_catalog(\n            \"https://data.lsdb.io/hats/gaia_dr3\",\n            search_filter=lsdb.PixelSearch([(6, 29070)]),\n            columns=[\"source_id\", \"ra\", \"dec\"],\n        )",
         "min_run_count": 2,
-        "name": "benchmarks.time_computation",
-        "number": 0,
+        "name": "benchmarks.BenchmarksHTTP.time_gaia",
+        "number": 1,
         "param_names": [],
         "params": [],
-        "repeat": 0,
-        "rounds": 2,
+        "repeat": 2,
+        "rounds": 1,
         "sample_time": 0.01,
+        "timeout": 120,
         "type": "time",
         "unit": "seconds",
-        "version": "089635b7375b19f5c790c7337625b200db3327a27d63c756ac5dbb4c1fc25b62",
+        "version": "ae5686613ff1a0fb54182c67fad5f301ca3de3bf7c0581831cc98a755201c9f1",
+        "warmup_time": -1
+    },
+    "benchmarks.BenchmarksS3.peakmem_euclid": {
+        "code": "class BenchmarksS3:\n    def peakmem_euclid(self):\n        self.euclid.compute()\n\n    def setup(self):\n        # pylint: disable=attribute-defined-outside-init\n        self.euclid = lsdb.open_catalog(\n            \"s3://nasa-irsa-euclid-q1/contributed/q1/merged_objects/hats\",\n            search_filter=lsdb.PixelSearch([(6, 16045)]),\n            columns=[\"object_id\", \"ra\", \"dec\"],\n        )",
+        "name": "benchmarks.BenchmarksS3.peakmem_euclid",
+        "param_names": [],
+        "params": [],
+        "timeout": 120,
+        "type": "peakmemory",
+        "unit": "bytes",
+        "version": "420ccf36a720e40e9fef2da455490bca520b6a9930182462e98a9e07cc004207"
+    },
+    "benchmarks.BenchmarksS3.time_euclid": {
+        "code": "class BenchmarksS3:\n    def time_euclid(self):\n        self.euclid.compute()\n\n    def setup(self):\n        # pylint: disable=attribute-defined-outside-init\n        self.euclid = lsdb.open_catalog(\n            \"s3://nasa-irsa-euclid-q1/contributed/q1/merged_objects/hats\",\n            search_filter=lsdb.PixelSearch([(6, 16045)]),\n            columns=[\"object_id\", \"ra\", \"dec\"],\n        )",
+        "min_run_count": 2,
+        "name": "benchmarks.BenchmarksS3.time_euclid",
+        "number": 1,
+        "param_names": [],
+        "params": [],
+        "repeat": 2,
+        "rounds": 1,
+        "sample_time": 0.01,
+        "timeout": 120,
+        "type": "time",
+        "unit": "seconds",
+        "version": "72dc22ec3d7ad1d34d0b736e0a95feaab8a7d226909bc78a8dbecbcc26cb4d26",
         "warmup_time": -1
     },
     "version": 2
