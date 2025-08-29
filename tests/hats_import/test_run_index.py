@@ -53,11 +53,11 @@ def test_run_index(
     assert schema.equals(basic_index_parquet_schema, check_metadata=False)
 
 
-def test_run_index_read_from_cloud(small_sky_order1_dir_cloud, tmp_path, dask_client):
+def test_run_index_read_from_cloud(small_sky_order1_catalog_dir_cloud, tmp_path, dask_client):
     """Test appropriate metadata is written"""
 
     args = IndexArguments(
-        input_catalog_path=small_sky_order1_dir_cloud,
+        input_catalog_path=small_sky_order1_catalog_dir_cloud,
         indexing_column="id",
         output_path=tmp_path,
         output_artifact_name="small_sky_object_index",

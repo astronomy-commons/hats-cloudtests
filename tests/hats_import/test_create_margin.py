@@ -38,7 +38,7 @@ def test_margin_cache_gen(
 
 
 def test_margin_cache_gen_read_from_cloud(
-    small_sky_order1_dir_cloud,
+    small_sky_order1_catalog_dir_cloud,
     tmp_path,
     dask_client,
 ):
@@ -49,7 +49,7 @@ def test_margin_cache_gen_read_from_cloud(
     - writing to local tmp
     """
     args = MarginCacheArguments(
-        input_catalog_path=small_sky_order1_dir_cloud,
+        input_catalog_path=small_sky_order1_catalog_dir_cloud,
         output_path=tmp_path,
         output_artifact_name="small_sky_order1_margin",
         dask_tmp=tmp_path,
@@ -68,13 +68,13 @@ def test_margin_cache_gen_read_from_cloud(
     assert catalog.catalog_path == args.catalog_path
 
 
-def test_no_margin_cache_overwrite(small_sky_order1_dir_cloud):
+def test_no_margin_cache_overwrite(small_sky_order1_catalog_dir_cloud):
     """Runner should refuse to generate margin cache which overwrites valid catalog"""
-    catalog_dir = small_sky_order1_dir_cloud.parent
-    catalog_name = small_sky_order1_dir_cloud.name
+    catalog_dir = small_sky_order1_catalog_dir_cloud.parent
+    catalog_name = small_sky_order1_catalog_dir_cloud.name
     with pytest.raises(ValueError, match="already contains a valid catalog"):
         MarginCacheArguments(
-            input_catalog_path=small_sky_order1_dir_cloud,
+            input_catalog_path=small_sky_order1_catalog_dir_cloud,
             output_path=catalog_dir,
             margin_threshold=10.0,
             output_artifact_name=catalog_name,

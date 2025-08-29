@@ -1,4 +1,4 @@
-test_bucket/data/small_sky_order1/dataset/Norder=1/Dir=0/Npix=44.parquet
-s3://test_bucket/data/small_sky_order1/dataset/Norder=1/Dir=0/Npix=45.parquet
-s3://test_bucket/data/small_sky_order1/dataset/Norder=1/Dir=0/Npix=46.parquet
-s3://test_bucket/data/small_sky_order1/dataset/Norder=1/Dir=0/Npix=47.parquet
+test_bucket/data/small_sky_order1/small_sky_order1/dataset/Norder=1/Dir=0/Npix=44.parquet
+s3://test_bucket/data/small_sky_order1/small_sky_order1/dataset/Norder=1/Dir=0/Npix=45.parquet
+s3://test_bucket/data/small_sky_order1/small_sky_order1/dataset/Norder=1/Dir=0/Npix=46.parquet
+s3://test_bucket/data/small_sky_order1/small_sky_order1/dataset/Norder=1/Dir=0/Npix=47.parquet

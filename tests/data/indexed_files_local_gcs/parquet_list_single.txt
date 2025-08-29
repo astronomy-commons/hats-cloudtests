@@ -1,4 +1,4 @@
-data/small_sky_order1/dataset/Norder=1/Dir=0/Npix=44.parquet
-gcs://data/small_sky_order1/dataset/Norder=1/Dir=0/Npix=45.parquet
-gcs://data/small_sky_order1/dataset/Norder=1/Dir=0/Npix=46.parquet
-gcs://data/small_sky_order1/dataset/Norder=1/Dir=0/Npix=47.parquet
+data/small_sky_order1/small_sky_order1/dataset/Norder=1/Dir=0/Npix=44.parquet
+gcs://data/small_sky_order1/small_sky_order1/dataset/Norder=1/Dir=0/Npix=45.parquet
+gcs://data/small_sky_order1/small_sky_order1/dataset/Norder=1/Dir=0/Npix=46.parquet
+gcs://data/small_sky_order1/small_sky_order1/dataset/Norder=1/Dir=0/Npix=47.parquet

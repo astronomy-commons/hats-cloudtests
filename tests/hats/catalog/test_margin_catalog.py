@@ -23,5 +23,5 @@ def test_read_margin_from_file(small_sky_margin_dir_cloud):
     info = catalog.catalog_info
     assert info.catalog_name == "small_sky_order1_margin"
     assert info.catalog_type == CatalogType.MARGIN
-    assert info.primary_catalog == "small_sky_order1"
+    assert info.primary_catalog == "../cloud/data/small_sky_order1/small_sky_order1"
     assert info.margin_threshold == 7200

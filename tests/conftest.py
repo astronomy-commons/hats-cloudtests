@@ -275,13 +275,18 @@ def small_sky_order1_dir_cloud(cloud_path):
 
 
 @pytest.fixture
-def small_sky_index_dir_cloud(cloud_path):
-    return cloud_path / "data" / "small_sky_object_index"
+def small_sky_order1_catalog_dir_cloud(small_sky_order1_dir_cloud):
+    return small_sky_order1_dir_cloud / "small_sky_order1"
 
 
 @pytest.fixture
-def small_sky_margin_dir_cloud(cloud_path):
-    return cloud_path / "data" / "small_sky_order1_margin"
+def small_sky_index_dir_cloud(small_sky_order1_dir_cloud):
+    return small_sky_order1_dir_cloud / "small_sky_object_index"
+
+
+@pytest.fixture
+def small_sky_margin_dir_cloud(small_sky_order1_dir_cloud):
+    return small_sky_order1_dir_cloud / "small_sky_order1_margin"
 
 
 @pytest.fixture
@@ -300,8 +305,8 @@ def small_sky_xmatch_catalog_cloud(small_sky_xmatch_dir_cloud):
 
 
 @pytest.fixture
-def small_sky_order1_hats_catalog_cloud(small_sky_order1_dir_cloud):
-    return hc.read_hats(small_sky_order1_dir_cloud)
+def small_sky_order1_hats_catalog_cloud(small_sky_order1_catalog_dir_cloud):
+    return hc.read_hats(small_sky_order1_catalog_dir_cloud)
 
 
 @pytest.fixture
