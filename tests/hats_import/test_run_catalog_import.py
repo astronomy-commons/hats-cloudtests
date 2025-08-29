@@ -88,10 +88,10 @@ def test_read_csv_cloud(small_sky_parts_dir_cloud):
     assert total_chunks == 1
 
 
-def test_no_import_overwrite(small_sky_order1_dir_cloud, small_sky_parts_dir_local):
+def test_no_import_overwrite(small_sky_order1_catalog_dir_cloud, small_sky_parts_dir_local):
     """Runner should refuse to overwrite a valid catalog"""
-    catalog_dir = small_sky_order1_dir_cloud.parent
-    catalog_name = small_sky_order1_dir_cloud.name
+    catalog_dir = small_sky_order1_catalog_dir_cloud.parent
+    catalog_name = small_sky_order1_catalog_dir_cloud.name
     with pytest.raises(ValueError, match="already contains a valid catalog"):
         ImportArguments(
             input_path=small_sky_parts_dir_local,

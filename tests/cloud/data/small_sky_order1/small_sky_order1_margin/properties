@@ -1,0 +1,16 @@
+#HATS catalog
+obs_collection=small_sky_order1_margin
+dataproduct_type=margin
+hats_nrows=47
+hats_col_ra=ra
+hats_col_dec=dec
+hats_primary_table_url=../cloud/data/small_sky_order1/small_sky_order1
+hats_margin_threshold=7200.0
+hats_npix_suffix=.parquet
+hats_order=1
+moc_sky_fraction=0.33333
+hats_builder=hats-import v0.6.3.dev2+gd06183b3d, hats v0.6.4
+hats_creation_date=2025-08-29T17\:38UTC
+hats_estsize=21
+hats_release_date=2024-09-18
+hats_version=v0.1
