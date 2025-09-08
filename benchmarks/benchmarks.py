@@ -4,7 +4,7 @@ import lsdb
 class BenchmarksHTTP:
     """Benchmark LSDB operations via HTTP."""
 
-    timeout = 120
+    timeout = 180
     rounds = 1
     repeat = 2
     number = 1
@@ -27,7 +27,7 @@ class BenchmarksHTTP:
 class BenchmarksCDSHTTP:
     """Benchmark LSDB operations via CDS's HTTP."""
 
-    timeout = 120
+    timeout = 480
     rounds = 1
     repeat = 2
     number = 1
