@@ -1,4 +1,4 @@
 git+https://github.com/lincc-frameworks/nested-pandas.git@main
 git+https://github.com/astronomy-commons/hats.git@delucchi/read_cds
 git+https://github.com/astronomy-commons/hats-import.git@main
-git+https://github.com/astronomy-commons/lsdb.git@main
+git+https://github.com/astronomy-commons/lsdb.git@delucchi/no_healpix_29
