@@ -1,5 +1,5 @@
 import lsdb
-
+from upath import UPath
 
 class BenchmarksHTTP:
     """Benchmark LSDB operations via HTTP."""
@@ -35,7 +35,7 @@ class BenchmarksCDSHTTP:
     def setup(self):
         # pylint: disable=attribute-defined-outside-init
         self.gaia = lsdb.open_catalog(
-            "https://vizcat.cds.unistra.fr/hats:n=1000000/gaia_dr3/",
+            UPath("https://vizcat.cds.unistra.fr/hats:n=1000000/gaia_dr3/", cache_options={"parquet_bytes_io":True}),
             search_filter=lsdb.PixelSearch([(7, 114853)]),
             columns=["DR3Name", "RA_ICRS", "DE_ICRS"],
         )
