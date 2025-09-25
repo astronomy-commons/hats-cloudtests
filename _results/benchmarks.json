@@ -1,10 +1,26 @@
 {
+    "benchmarks.BenchmarksCDSHTTP.time_gaia": {
+        "code": "class BenchmarksCDSHTTP:\n    def time_gaia(self):\n        self.gaia.compute()\n\n    def setup(self):\n        # pylint: disable=attribute-defined-outside-init\n        self.gaia = lsdb.open_catalog(\n            UPath(\n                \"https://vizcat.cds.unistra.fr/hats:n=1000000/gaia_dr3/\",\n                cache_options={\"parquet_precache_all_bytes\": True},\n            ),\n            search_filter=lsdb.PixelSearch([(7, 114853)]),\n            columns=[\"DR3Name\", \"RA_ICRS\", \"DE_ICRS\"],\n        )",
+        "min_run_count": 2,
+        "name": "benchmarks.BenchmarksCDSHTTP.time_gaia",
+        "number": 1,
+        "param_names": [],
+        "params": [],
+        "repeat": 2,
+        "rounds": 1,
+        "sample_time": 0.01,
+        "timeout": 480,
+        "type": "time",
+        "unit": "seconds",
+        "version": "79fc6173ee38b252e5f122afed5bdd8789c67083d77521cd76dd045101c54ef8",
+        "warmup_time": -1
+    },
     "benchmarks.BenchmarksHTTP.peakmem_gaia": {
         "code": "class BenchmarksHTTP:\n    def peakmem_gaia(self):\n        self.gaia.compute()\n\n    def setup(self):\n        # pylint: disable=attribute-defined-outside-init\n        self.gaia = lsdb.open_catalog(\n            \"https://data.lsdb.io/hats/gaia_dr3\",\n            search_filter=lsdb.PixelSearch([(6, 29070)]),\n            columns=[\"source_id\", \"ra\", \"dec\"],\n        )",
         "name": "benchmarks.BenchmarksHTTP.peakmem_gaia",
         "param_names": [],
         "params": [],
-        "timeout": 120,
+        "timeout": 180,
         "type": "peakmemory",
         "unit": "bytes",
         "version": "e0054c3ecf917dda571e96657bfe9c18618afa15fbac4a38086470eb298ececc"
@@ -19,7 +35,7 @@
         "repeat": 2,
         "rounds": 1,
         "sample_time": 0.01,
-        "timeout": 120,
+        "timeout": 180,
         "type": "time",
         "unit": "seconds",
         "version": "ae5686613ff1a0fb54182c67fad5f301ca3de3bf7c0581831cc98a755201c9f1",
