@@ -1,3 +1,3 @@
-git+https://github.com/astronomy-commons/hats.git@issue/540/return_type
+git+https://github.com/astronomy-commons/hats.git@main
 git+https://github.com/astronomy-commons/hats-import.git@main
 git+https://github.com/astronomy-commons/lsdb.git@main
