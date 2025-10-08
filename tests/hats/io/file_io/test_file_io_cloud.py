@@ -8,6 +8,7 @@ from hats.io.file_io import (
     load_csv_to_pandas_generator,
     load_text_file,
     read_fits_image,
+    read_parquet_dataset,
     read_parquet_file_to_pandas,
     write_dataframe_to_csv,
     write_fits_image,
@@ -15,6 +16,7 @@ from hats.io.file_io import (
 )
 from hats.io.paths import pixel_catalog_file
 from hats.pixel_math.healpix_pixel import HealpixPixel
+from upath import UPath
 
 
 @pytest.mark.write_to_cloud
@@ -63,3 +65,45 @@ def test_write_point_map_roundtrip(small_sky_dir_cloud, tmp_cloud_path):
     write_fits_image(expected_counts_skymap, output_map_pointer)
     counts_skymap = read_fits_image(output_map_pointer)
     np.testing.assert_array_equal(counts_skymap, expected_counts_skymap)
+
+
+def test_read_parquet_dataset(small_sky_dir_cloud, cloud, storage_options, local_data_dir):
+    # We're going to add some spice in here. If the protocol SHOULD be stripped
+    ## from the path for reading via pyarrow parquet dataset, confirm that the
+    ## returned string paths do not have this protocol prefix. At current,
+    ## protocol stripping is understood for S3 and GCS.
+
+    protocol_prefix = None
+    if cloud == "local_s3":
+        protocol_prefix = "s3"
+    if cloud == "local_gcs":
+        protocol_prefix = "gcs"
+
+    # Single file.
+    (paths, ds) = read_parquet_dataset(
+        small_sky_dir_cloud / "dataset" / "Norder=0" / "Dir=0" / "Npix=11.parquet"
+    )
+
+    assert ds.count_rows() == 131
+
+    if protocol_prefix:
+        assert not paths.startswith(protocol_prefix)
+
+    # Single file, but passed as a list.
+    (paths, ds) = read_parquet_dataset(
+        [small_sky_dir_cloud / "dataset" / "Norder=0" / "Dir=0" / "Npix=11.parquet"]
+    )
+
+    assert ds.count_rows() == 131
+    if protocol_prefix:
+        assert not paths[0].startswith(protocol_prefix)
+
+    # Multiple files. Load them with the appropriate storage options, since they're just strings right now.
+    file_names = load_text_file(local_data_dir / f"indexed_files_{cloud}" / "parquet_list_single.txt")
+    file_names = [UPath(f.strip(), **storage_options) for f in file_names]
+
+    (paths, ds) = read_parquet_dataset(file_names)
+
+    assert ds.count_rows() == 131
+    if protocol_prefix:
+        assert np.all([not path.startswith(protocol_prefix) for path in paths])
