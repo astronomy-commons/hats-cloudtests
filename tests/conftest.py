@@ -22,7 +22,6 @@ SMALL_SKY_ORDER1_DIR_NAME = "small_sky_order1"
 
 
 TEST_DIR = os.path.dirname(__file__)
-SMALL_SKY_DIR_NAME = "small_sky"
 
 ALL_CLOUDS = ["abfs", "local_s3", "local_gcs", "http"]
 READ_ONLY_CLOUDS = ["local_gcs", "http"]
