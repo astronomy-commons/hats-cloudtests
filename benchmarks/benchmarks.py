@@ -28,7 +28,7 @@ class BenchmarksHTTP:
 class BenchmarksCDSHTTP:
     """Benchmark LSDB operations via CDS's HTTP."""
 
-    timeout = 480
+    timeout = 600
     rounds = 1
     repeat = 2
     number = 1
