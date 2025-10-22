@@ -1,8 +1,7 @@
-
+import lsdb.nested as nd
 import numpy as np
 import pandas as pd
 
-import lsdb.nested as nd
 
 def test_from_epyc():
     """test a dataset from epyc. Motivated by https://github.com/lincc-frameworks/nested-dask/issues/21"""
