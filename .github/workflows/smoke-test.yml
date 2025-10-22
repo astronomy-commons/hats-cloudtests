@@ -30,12 +30,13 @@ jobs:
       uses: actions/setup-python@v6
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
     - name: Install dependencies
       run: |
         sudo apt-get update
-        python -m pip install --upgrade pip
-        pip install -e .[dev]
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        uv pip install --system -e .[dev]
+        if [ -f requirements.txt ]; then uv pip install --system -r requirements.txt; fi
     - name: List dependencies
       run: |
         pip list
@@ -65,6 +66,10 @@ jobs:
     #   env:
     #     ABFS_LINCCDATA_ACCOUNT_NAME: ${{ secrets.LINCC_ABFS_ACCOUNT_NAME }}
     #     ABFS_LINCCDATA_ACCOUNT_KEY: ${{ secrets.LINCC_ABFS_ACCOUNT_KEY }}
+    - name: Run connectivity tests
+      if: matrix.cloud == 'connectivity'
+      run: |
+        python -m pytest connectivity_tests
     - name: Send status to Slack app (LSDB CI Reporter)
       if: ${{ failure() && github.event_name != 'workflow_dispatch' }}
       id: slack
