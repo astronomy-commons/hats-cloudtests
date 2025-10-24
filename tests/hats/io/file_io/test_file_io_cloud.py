@@ -49,6 +49,8 @@ def test_read_parquet_to_pandas_dir(small_sky_dir_local, small_sky_order1_catalo
 
     pixel_data_path_cloud = small_sky_order1_catalog_dir_cloud / "dataset" / "Norder=1" / "Dir=0"
     loaded_df = read_parquet_file_to_pandas(pixel_data_path_cloud)
+    assert len(loaded_df) == len(parquet_df)
+    loaded_df = loaded_df.sort_values("_healpix_29").reset_index(drop=True)
     pd.testing.assert_frame_equal(parquet_df, loaded_df)
 
 
