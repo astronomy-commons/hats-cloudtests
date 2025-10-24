@@ -14,7 +14,7 @@ from hats.io.file_io import (
     write_fits_image,
     write_string_to_file,
 )
-from hats.io.paths import pixel_catalog_file
+from hats.io.paths import pixel_catalog_file, pixel_directory
 from hats.pixel_math.healpix_pixel import HealpixPixel
 from upath import UPath
 
@@ -29,9 +29,25 @@ def test_write_string_to_file(tmp_cloud_path):
 
 
 def test_read_parquet_to_pandas(small_sky_dir_local, small_sky_dir_cloud):
-    pixel_data_path = pixel_catalog_file(small_sky_dir_local, HealpixPixel(0, 11))
-    pixel_data_path_cloud = pixel_catalog_file(small_sky_dir_cloud, HealpixPixel(0, 11))
+    target_pixel = HealpixPixel(0, 11)
+    pixel_data_path = pixel_catalog_file(small_sky_dir_local, target_pixel)
     parquet_df = npd.read_parquet(pixel_data_path, partitioning=None)
+
+    pixel_data_path_cloud = pixel_catalog_file(small_sky_dir_cloud, target_pixel)
+    loaded_df = read_parquet_file_to_pandas(pixel_data_path_cloud)
+    pd.testing.assert_frame_equal(parquet_df, loaded_df)
+
+    pixel_data_path_cloud = pixel_directory(small_sky_dir_cloud, target_pixel.order, target_pixel.pixel)
+    loaded_df = read_parquet_file_to_pandas(pixel_data_path_cloud)
+    pd.testing.assert_frame_equal(parquet_df, loaded_df)
+
+
+def test_read_parquet_to_pandas_dir(small_sky_dir_local, small_sky_order1_catalog_dir_cloud):
+    # Read a directory of data into a single frame. This is the same content as the full version.
+    pixel_data_path = pixel_catalog_file(small_sky_dir_local, HealpixPixel(0, 11))
+    parquet_df = npd.read_parquet(pixel_data_path, partitioning=None)
+
+    pixel_data_path_cloud = small_sky_order1_catalog_dir_cloud / "dataset" / "Norder=1" / "Dir=0"
     loaded_df = read_parquet_file_to_pandas(pixel_data_path_cloud)
     pd.testing.assert_frame_equal(parquet_df, loaded_df)
 
