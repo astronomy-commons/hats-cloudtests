@@ -36,10 +36,7 @@ class BenchmarksCDSHTTP:
     def setup(self):
         # pylint: disable=attribute-defined-outside-init
         self.gaia = lsdb.open_catalog(
-            UPath(
-                "https://vizcat.cds.unistra.fr/hats:n=1000000/gaia_dr3/",
-                cache_options={"parquet_precache_all_bytes": True},
-            ),
+            "https://vizcat.cds.unistra.fr/hats:n=1000000/gaia_dr3/",
             search_filter=lsdb.PixelSearch([(7, 114853)]),
             columns=["DR3Name", "RA_ICRS", "DE_ICRS"],
         )
