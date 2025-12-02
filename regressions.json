@@ -1,1 +1,1 @@
-{"regressions": [["benchmarks.BenchmarksS3.time_euclid", "graphs/Cython/branch-HEAD/build/machine-gh-runner/packaging/python-3.11/benchmarks.BenchmarksS3.time_euclid.json", {}, null, 1.3344235979999723, 0.5818747679999774, [[null, 83, 0.5818747679999774, 1.0530092104999937]]]]}
+{"regressions": [["benchmarks.BenchmarksS3.time_euclid", "graphs/Cython/branch-HEAD/build/machine-gh-runner/packaging/python-3.11/benchmarks.BenchmarksS3.time_euclid.json", {}, null, 1.3901096310000298, 0.5818747679999774, [[null, 83, 0.5818747679999774, 1.0530092104999937]]]]}
