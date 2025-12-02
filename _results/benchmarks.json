@@ -1,6 +1,6 @@
 {
     "benchmarks.BenchmarksCDSHTTP.time_gaia": {
-        "code": "class BenchmarksCDSHTTP:\n    def time_gaia(self):\n        self.gaia.compute()\n\n    def setup(self):\n        # pylint: disable=attribute-defined-outside-init\n        self.gaia = lsdb.open_catalog(\n            UPath(\n                \"https://vizcat.cds.unistra.fr/hats:n=1000000/gaia_dr3/\",\n                cache_options={\"parquet_precache_all_bytes\": True},\n            ),\n            search_filter=lsdb.PixelSearch([(7, 114853)]),\n            columns=[\"DR3Name\", \"RA_ICRS\", \"DE_ICRS\"],\n        )",
+        "code": "class BenchmarksCDSHTTP:\n    def time_gaia(self):\n        self.gaia.compute()\n\n    def setup(self):\n        # pylint: disable=attribute-defined-outside-init\n        self.gaia = lsdb.open_catalog(\n            \"https://vizcat.cds.unistra.fr/hats:n=1000000/gaia_dr3/\",\n            search_filter=lsdb.PixelSearch([(7, 114853)]),\n            columns=[\"DR3Name\", \"RA_ICRS\", \"DE_ICRS\"],\n        )",
         "min_run_count": 2,
         "name": "benchmarks.BenchmarksCDSHTTP.time_gaia",
         "number": 1,
@@ -12,7 +12,7 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds",
-        "version": "79fc6173ee38b252e5f122afed5bdd8789c67083d77521cd76dd045101c54ef8",
+        "version": "8e5a94cdf89d62b7322c21f0749f1af0eec3ee4e841d660cb605b8dd2958377e",
         "warmup_time": -1
     },
     "benchmarks.BenchmarksHTTP.peakmem_gaia": {
