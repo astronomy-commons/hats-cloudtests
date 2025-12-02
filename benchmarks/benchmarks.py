@@ -1,5 +1,4 @@
 import lsdb
-from upath import UPath
 
 
 class BenchmarksHTTP:
