@@ -340,7 +340,7 @@ class Helpers:
         do_not_compare = {prop: None for prop in ["hats_creation_date", "hats_estsize"]}
         expected_catalog_info = expected_catalog_info.copy_and_update(**do_not_compare)
         catalog_info = catalog_info.copy_and_update(**(properties_to_update | do_not_compare))
-        assert expected_catalog_info == catalog_info
+        assert expected_catalog_info.model_dump() == catalog_info.model_dump()
 
 
 @pytest.fixture
