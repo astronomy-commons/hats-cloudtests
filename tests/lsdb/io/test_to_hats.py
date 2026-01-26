@@ -15,7 +15,7 @@ def test_save_catalog(local_data_dir, tmp_cloud_path, helpers):
     )
 
     base_catalog_path = tmp_cloud_path / "new_catalog_name"
-    catalog.to_hats(
+    catalog.write_catalog(
         base_catalog_path, skymap_alt_orders=[1, 2], addl_hats_properties={"obs_regime": "Optical"}
     )
     expected_catalog = lsdb.read_hats(base_catalog_path)
@@ -23,7 +23,7 @@ def test_save_catalog(local_data_dir, tmp_cloud_path, helpers):
     assert expected_catalog.get_healpix_pixels() == catalog.get_healpix_pixels()
     pd.testing.assert_frame_equal(expected_catalog.compute(), catalog._ddf.compute())
 
-    # When saving a catalog with to_hats, we update the hats_max_rows
+    # When saving a catalog with write_catalog, we update the hats_max_rows
     # to the maximum count of points per partition. In this case there
     # is only one with 111 rows, so that is the value we expect.
     partition_sizes = catalog._ddf.map_partitions(len).compute()
@@ -32,7 +32,7 @@ def test_save_catalog(local_data_dir, tmp_cloud_path, helpers):
     helpers.assert_catalog_info_is_correct(
         expected_catalog.hc_structure.catalog_info,
         catalog.hc_structure.catalog_info,
-        hats_max_rows="111",
+        hats_max_rows=111,
         skymap_order=8,
         skymap_alt_orders=[1, 2],
         obs_regime="Optical",
