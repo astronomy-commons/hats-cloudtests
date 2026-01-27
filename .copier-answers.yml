@@ -1,10 +1,10 @@
 # Changes here will be overwritten by Copier
-_commit: v2.1.2
+_commit: v2.2.0
 _src_path: gh:lincc-frameworks/python-project-template
 author_email: lincc-frameworks-team@lists.lsst.org
 author_name: LINCC Frameworks
 create_example_module: false
-custom_install: true
+custom_install: custom
 enforce_style:
 - pylint
 - black
@@ -15,6 +15,8 @@ include_benchmarks: true
 include_docs: false
 mypy_type_checking: none
 package_name: hats_cloudtests
+project_description: Integration tests for cloud read and write through HATS and LSDB
+    libraries.
 project_license: BSD
 project_name: hats_cloudtests
 project_organization: astronomy-commons
