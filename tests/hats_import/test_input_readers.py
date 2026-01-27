@@ -5,8 +5,8 @@ from hats_import.catalog.file_readers import (
     FitsReader,
     IndexedCsvReader,
     IndexedParquetReader,
+    ParquetPandasReader,
     ParquetPyarrowReader,
-    ParquetReader,
 )
 
 
@@ -107,11 +107,11 @@ def test_csv_pyarrow_reader(raw_data_dir):
     assert total_chunks == 1
 
 
-def test_parquet_reader(small_sky_dir_cloud):
+def test_parquet_reader_pandas(small_sky_dir_cloud):
     """Verify we can read the csv file into a single data frame."""
     single_parquet = small_sky_dir_cloud / "dataset" / "Norder=0" / "Dir=0" / "Npix=11.parquet"
     total_chunks = 0
-    for frame in ParquetReader().read(single_parquet):
+    for frame in ParquetPandasReader().read(single_parquet):
         total_chunks += 1
         assert len(frame) == 131
 
