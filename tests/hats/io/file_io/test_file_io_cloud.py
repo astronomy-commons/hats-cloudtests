@@ -98,7 +98,7 @@ def test_read_parquet_dataset(small_sky_dir_cloud, cloud, storage_options, local
         protocol_prefix = "gcs"
 
     # Single file.
-    (paths, ds) = read_parquet_dataset(
+    paths, ds = read_parquet_dataset(
         small_sky_dir_cloud / "dataset" / "Norder=0" / "Dir=0" / "Npix=11.parquet"
     )
 
@@ -108,7 +108,7 @@ def test_read_parquet_dataset(small_sky_dir_cloud, cloud, storage_options, local
         assert not paths.startswith(protocol_prefix)
 
     # Single file, but passed as a list.
-    (paths, ds) = read_parquet_dataset(
+    paths, ds = read_parquet_dataset(
         [small_sky_dir_cloud / "dataset" / "Norder=0" / "Dir=0" / "Npix=11.parquet"]
     )
 
@@ -120,7 +120,7 @@ def test_read_parquet_dataset(small_sky_dir_cloud, cloud, storage_options, local
     file_names = load_text_file(local_data_dir / f"indexed_files_{cloud}" / "parquet_list_single.txt")
     file_names = [UPath(f.strip(), **storage_options) for f in file_names]
 
-    (paths, ds) = read_parquet_dataset(file_names)
+    paths, ds = read_parquet_dataset(file_names)
 
     assert ds.count_rows() == 131
     if protocol_prefix:
