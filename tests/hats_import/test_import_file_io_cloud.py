@@ -1,27 +1,7 @@
-import pytest
-from hats.io.file_io import (
+from hats_import.file_io import (
     directory_has_contents,
-    does_file_or_directory_exist,
     find_files_matching_path,
-    is_regular_file,
 )
-
-
-def test_file_or_dir_exist(small_sky_dir_cloud):
-    assert does_file_or_directory_exist(small_sky_dir_cloud / "properties")
-
-
-@pytest.mark.xfail(
-    "config.getvalue('cloud') == 'http'", reason="https://github.com/fsspec/universal_pathlib/issues/535"
-)
-def test_is_regular_file(small_sky_dir_cloud):
-    partition_info_file = small_sky_dir_cloud / "properties"
-    assert is_regular_file(partition_info_file)
-
-    assert not is_regular_file(small_sky_dir_cloud)
-
-    partition_dir = small_sky_dir_cloud / "Norder=0"
-    assert not is_regular_file(partition_dir)
 
 
 def test_find_files_matching_path(small_sky_dir_cloud):
