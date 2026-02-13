@@ -39,15 +39,26 @@ jobs:
       if: matrix.cloud == 'http'
       run: |
         python -m pytest tests --cloud http
+    #- name: Setup GCS emulator
+    #  if: matrix.cloud == 'local_gcs'
+    #  uses: fsouza/fake-gcs-action@v0.4.1
+    #  with:
+    #    version: latest #"1.37.2"
+    #    data: tests/cloud
+    #    public-host: "0.0.0.0:4443"
+    #    external-url: "http://localhost:4443"
+    #    scheme: http
     - name: Setup GCS emulator
       if: matrix.cloud == 'local_gcs'
-      uses: fsouza/fake-gcs-action@v0.4.1
-      with:
-        version: latest #"1.37.2"
-        data: tests/cloud
-        public-host: "0.0.0.0:4443"
-        external-url: "http://localhost:4443"
-        scheme: http
+      run: |
+        # Install and run fake-gcs-server directly (not via action)
+        docker run -d \
+          --name gcs-emulator \
+          -p 4443:4443 \
+          -v ${{ github.workspace }}/tests/cloud:/data \
+          oittaa/gcp-storage-emulator:latest \
+          start --host=0.0.0.0 --port=4443
+        sleep 3
     - name: Run local GCS (google cloud) with pytest
       if: matrix.cloud == 'local_gcs'
       run: |
