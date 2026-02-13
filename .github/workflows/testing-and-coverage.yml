@@ -39,36 +39,33 @@ jobs:
       if: matrix.cloud == 'http'
       run: |
         python -m pytest tests --cloud http
-    - name: Setup GCS emulator
-      if: matrix.cloud == 'local_gcs'
-      uses: fsouza/fake-gcs-action@v0.4.0
-      with:
-        version: "1.44.0"
-        data: tests/cloud
-        public-host: "0.0.0.0:4443"
-        external-url: "http://localhost:4443"
-        scheme: http
     #- name: Setup GCS emulator
     #  if: matrix.cloud == 'local_gcs'
-    #  run: |
-    #    # Create bucket directory structure
-    #    mkdir -p ${{ github.workspace }}/tests/cloud/test-bucket
-
-    #    # Copy test data into the bucket
-    #    cp -r ${{ github.workspace }}/tests/data/* ${{ github.workspace }}/tests/cloud/test-bucket/ 2>/dev/null || true
+    #  uses: fsouza/fake-gcs-action@v0.4.0
+    #  with:
+    #    version: "1.44.0"
+    #    data: tests/cloud
+    #    public-host: "0.0.0.0:4443"
+    #    external-url: "http://localhost:4443"
+    #    scheme: http
+    - name: Setup GCS emulator
+      if: matrix.cloud == 'local_gcs'
+      run: |
+        # Create bucket directory structure
+        mkdir -p ${{ github.workspace }}/tests/cloud/test-bucket
         
-        # Debug: Show what's in the directory
-    #    echo "Contents of tests/cloud:"
-    #    ls -la ${{ github.workspace }}/tests/cloud/
-
-        # Install and run fake-gcs-server directly (not via action)
-    #    docker run -d \
-    #      --name gcs-emulator \
-    #      -p 4443:4443 \
-    #      -v ${{ github.workspace }}/tests/cloud:/data \
-    #      oittaa/gcp-storage-emulator:latest \
-    #      start --host=0.0.0.0 --port=4443
-    #    sleep 5
+        # Copy test data into the bucket
+        cp -r ${{ github.workspace }}/tests/data/* ${{ github.workspace }}/tests/cloud/test-bucket/ 2>/dev/null || true
+        
+        # Run fake-gcs-server with a specific compatible image version
+        docker run -d \
+          --name gcs-emulator \
+          -p 4443:4443 \
+          -v ${{ github.workspace }}/tests/cloud:/data \
+          fsouza/fake-gcs-server:1.44.0 \
+          -scheme http -external-url http://localhost:4443
+        
+        sleep 3
     - name: Run local GCS (google cloud) with pytest
       if: matrix.cloud == 'local_gcs'
       run: |
