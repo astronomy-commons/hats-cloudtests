@@ -39,6 +39,7 @@ jobs:
       if: matrix.cloud == 'http'
       run: |
         python -m pytest tests --cloud http
+    # If the action updates, we may be able to use this again
     #- name: Setup GCS emulator
     #  if: matrix.cloud == 'local_gcs'
     #  uses: fsouza/fake-gcs-action@v0.4.0
