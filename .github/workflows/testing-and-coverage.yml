@@ -57,6 +57,10 @@ jobs:
         # Copy test data into the bucket
         cp -r ${{ github.workspace }}/tests/data/* ${{ github.workspace }}/tests/cloud/test-bucket/ 2>/dev/null || true
         
+        # Debug: Show what's in the directory
+        echo "Contents of tests/cloud:"
+        ls -la ${{ github.workspace }}/tests/cloud/
+
         # Install and run fake-gcs-server directly (not via action)
         docker run -d \
           --name gcs-emulator \
