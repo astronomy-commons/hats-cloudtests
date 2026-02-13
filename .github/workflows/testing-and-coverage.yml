@@ -58,11 +58,13 @@ jobs:
           -v ${{ github.workspace }}/tests/cloud:/data \
           oittaa/gcp-storage-emulator:latest \
           start --host=0.0.0.0 --port=4443
-        sleep 3
+        sleep 5
     - name: Run local GCS (google cloud) with pytest
       if: matrix.cloud == 'local_gcs'
       run: |
         python -m pytest tests --cloud local_gcs
+      env:
+        STORAGE_EMULATOR_HOST: http://localhost:4443
     # - name: Run ABFS unit tests with pytest
     #   run: |
     #     python -m pytest tests --cloud abfs
