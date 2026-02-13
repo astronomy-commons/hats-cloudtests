@@ -51,6 +51,9 @@ jobs:
     - name: Setup GCS emulator
       if: matrix.cloud == 'local_gcs'
       run: |
+        # Create bucket directory structure
+        mkdir -p ${{ github.workspace }}/tests/cloud/test-bucket
+        
         # Install and run fake-gcs-server directly (not via action)
         docker run -d \
           --name gcs-emulator \
