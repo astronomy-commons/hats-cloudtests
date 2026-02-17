@@ -50,7 +50,7 @@ jobs:
         python -m pytest tests --cloud http
     - name: Setup GCS emulator
       if: matrix.cloud == 'local_gcs'
-      uses: fsouza/fake-gcs-action@v0.4.1
+      uses: fsouza/fake-gcs-action@main
       with:
         version: "1.37.2"
         data: tests/cloud
