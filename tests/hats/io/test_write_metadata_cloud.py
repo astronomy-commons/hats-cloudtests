@@ -42,7 +42,7 @@ def test_write_parquet_metadata(tmp_cloud_path, small_sky_dir_cloud):
 
 def check_parquet_schema(file_path, expected_schema, expected_num_row_groups=1):
     """Check parquet schema against expectations"""
-    assert file_io.does_file_or_directory_exist(file_path)
+    assert file_path.exists()
 
     single_metadata = file_io.read_parquet_metadata(file_path)
     schema = single_metadata.schema.to_arrow_schema()

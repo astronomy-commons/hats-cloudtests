@@ -4,6 +4,7 @@ import pandas as pd
 import pytest
 from hats.io import paths
 from hats.io.file_io import (
+    directory_has_contents,
     load_csv_to_pandas,
     load_csv_to_pandas_generator,
     load_text_file,
@@ -125,3 +126,7 @@ def test_read_parquet_dataset(small_sky_dir_cloud, cloud, storage_options, local
     assert ds.count_rows() == 131
     if protocol_prefix:
         assert np.all([not path.startswith(protocol_prefix) for path in paths])
+
+
+def test_directory_has_contents(small_sky_order1_dir_cloud):
+    assert directory_has_contents(small_sky_order1_dir_cloud)
