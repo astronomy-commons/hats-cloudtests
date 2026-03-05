@@ -4,10 +4,11 @@ import numpy.testing as npt
 import pandas as pd
 import pytest
 from hats.io.file_io import read_fits_image
+from hats.testing import assert_catalog_info_is_correct
 
 
 @pytest.mark.write_to_cloud
-def test_save_catalog(local_data_dir, tmp_cloud_path, helpers):
+def test_save_catalog(local_data_dir, tmp_cloud_path):
     pathway = local_data_dir / "xmatch" / "xmatch_catalog_raw.csv"
     input_df = pd.read_csv(pathway)
     catalog = lsdb.from_dataframe(
@@ -29,7 +30,7 @@ def test_save_catalog(local_data_dir, tmp_cloud_path, helpers):
     partition_sizes = catalog._ddf.map_partitions(len).compute()
     assert max(partition_sizes) == 111
 
-    helpers.assert_catalog_info_is_correct(
+    assert_catalog_info_is_correct(
         expected_catalog.hc_structure.catalog_info,
         catalog.hc_structure.catalog_info,
         hats_max_rows=111,
