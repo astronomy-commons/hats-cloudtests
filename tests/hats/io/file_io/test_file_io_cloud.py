@@ -1,5 +1,6 @@
 import nested_pandas as npd
 import numpy as np
+import numpy.testing as npt
 import pandas as pd
 import pytest
 from hats.io import paths
@@ -17,6 +18,8 @@ from hats.io.file_io import (
 )
 from hats.io.paths import pixel_catalog_file, pixel_directory
 from hats.pixel_math.healpix_pixel import HealpixPixel
+from hats.pixel_math.sparse_histogram import SparseHistogram
+from numpy import frombuffer
 from upath import UPath
 
 
@@ -130,3 +133,22 @@ def test_read_parquet_dataset(small_sky_dir_cloud, cloud, storage_options, local
 
 def test_directory_has_contents(small_sky_order1_dir_cloud):
     assert directory_has_contents(small_sky_order1_dir_cloud)
+
+
+@pytest.mark.write_to_cloud
+def test_histogram_read_write_round_trip(tmp_cloud_path):
+    """Test that we can read what we write into a histogram file."""
+    histogram = SparseHistogram([11], [131], 0)
+
+    # Write as a sparse array
+    file_name = tmp_cloud_path / "round_trip_sparse.npz"
+    histogram.to_file(file_name)
+    read_histogram = SparseHistogram.from_file(file_name)
+    npt.assert_array_equal(read_histogram.to_array(), histogram.to_array())
+
+    # Write as a dense 1-d numpy array
+    file_name = tmp_cloud_path / "round_trip_dense.npz"
+    histogram.to_dense_file(file_name)
+    with file_name.open("rb") as file_handle:
+        read_histogram = frombuffer(file_handle.read(), dtype=np.int64)
+    npt.assert_array_equal(read_histogram, histogram.to_array())
