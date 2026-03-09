@@ -81,14 +81,16 @@ jobs:
 
         json_data=$(curl -s -H "Authorization: Bearer ${{ github.token }}" \
                 "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs")
-        name_conclusion_array=($(echo "$json_data" | jq -r '.jobs[] | select(.name | startswith("build")) | "\(.name).\(.conclusion)"'))
-        echo $name_conclusion_array
+        echo "$json_data" | jq -r '.jobs[] | select(.name | startswith("build")) | select(.conclusion | startswith("fail")) | .name, .conclusion, .run_id, .id'  &> jq.out
 
-        for item in "${name_conclusion_array[@]}"; do
-            IFS='.' read -r name conclusion <<< "$item"
-            echo "Name: $name"
-            echo "Conclusion: $conclusion"
-        done
+        echo "Github Failures:"
+        echo "----------------"
+
+        while IFS= read -r line1 && IFS= read -r line2 && IFS= read -r line3 && IFS= read -r line4
+        do
+            echo "$line2: $line1"
+            echo "${{ github.server_url }}/${{ github.repository }}/actions/runs/$line3/job/$line4"
+        done < "jq.out"
       # if: ${{ failure() && github.event_name != 'workflow_dispatch' }}
       # id: slack
       # uses: slackapi/slack-github-action@v2
