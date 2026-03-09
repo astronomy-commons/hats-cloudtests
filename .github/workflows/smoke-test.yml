@@ -81,9 +81,8 @@ jobs:
 
         json_data=$(curl -s -H "Authorization: Bearer ${{ github.token }}" \
                 "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs")
-        echo $json_data
-
         name_conclusion_array=($(echo "$json_data" | jq -r '.jobs[] | select(.name | startswith("build")) | "\(.name).\(.conclusion)"'))
+        echo $name_conclusion_array
 
         for item in "${name_conclusion_array[@]}"; do
             IFS='.' read -r name conclusion <<< "$item"
