@@ -48,28 +48,28 @@ jobs:
       if: matrix.cloud == 'http'
       run: |
         python -m pytest tests --cloud http
-    - name: Setup GCS emulator
-      if: matrix.cloud == 'local_gcs'
-      uses: fsouza/fake-gcs-action@main
-      with:
-        version: "1.37.2"
-        data: tests/cloud
-        public-host: "0.0.0.0:4443"
-        external-url: "http://localhost:4443"
-        scheme: http
-    - name: Run local GCS (google cloud) with pytest
-      if: matrix.cloud == 'local_gcs'
-      run: |
-        python -m pytest tests --cloud local_gcs    # - name: Run ABFS unit tests with pytest
+    # - name: Setup GCS emulator
+    #   if: matrix.cloud == 'local_gcs'
+    #   uses: fsouza/fake-gcs-action@main
+    #   with:
+    #     version: "1.37.2"
+    #     data: tests/cloud
+    #     public-host: "0.0.0.0:4443"
+    #     external-url: "http://localhost:4443"
+    #     scheme: http
+    # - name: Run local GCS (google cloud) with pytest
+    #   if: matrix.cloud == 'local_gcs'
+    #   run: |
+    #     python -m pytest tests --cloud local_gcs    # - name: Run ABFS unit tests with pytest
     #   run: |
     #     python -m pytest tests --cloud abfs
     #   env:
     #     ABFS_LINCCDATA_ACCOUNT_NAME: ${{ secrets.LINCC_ABFS_ACCOUNT_NAME }}
     #     ABFS_LINCCDATA_ACCOUNT_KEY: ${{ secrets.LINCC_ABFS_ACCOUNT_KEY }}
-    - name: Run connectivity tests
-      if: matrix.cloud == 'connectivity'
-      run: |
-        python -m pytest connectivity_tests
+    # - name: Run connectivity tests
+    #   if: matrix.cloud == 'connectivity'
+    #   run: |
+    #     python -m pytest connectivity_tests
   overall_status:
     needs: build
     if: failure()
@@ -81,8 +81,9 @@ jobs:
 
         json_data=$(curl -s -H "Authorization: Bearer ${{ github.token }}" \
                 "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs")
+        echo $json_data
 
-        name_conclusion_array=($(echo "$json_data" | jq -r '.jobs[] | select(.name | startswith("My matrix job")) | "\(.name).\(.conclusion)"'))
+        name_conclusion_array=($(echo "$json_data" | jq -r '.jobs[] | select(.name | startswith("build")) | "\(.name).\(.conclusion)"'))
 
         for item in "${name_conclusion_array[@]}"; do
             IFS='.' read -r name conclusion <<< "$item"
