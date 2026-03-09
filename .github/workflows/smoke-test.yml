@@ -70,40 +70,58 @@ jobs:
       if: matrix.cloud == 'connectivity'
       run: |
         python -m pytest connectivity_tests
+  overall_status:
+    needs: build
+    if: failure()
+    runs-on: ubuntu-latest 
+    steps:
     - name: Send status to Slack app (LSDB CI Reporter)
-      if: ${{ failure() && github.event_name != 'workflow_dispatch' }}
-      id: slack
-      uses: slackapi/slack-github-action@v2
-      with:
-        webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
-        webhook-type: webhook-trigger
-        # For posting a rich message using Block Kit
-        payload: |
-          {
-            "blocks": [
-              {
-                "type": "header",
-                "text": {
-                  "type": "plain_text",
-                  "text": "HATS Cloud tests: ${{ matrix.python-version }} - ${{ matrix.cloud }}"
-                }
-              },
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": "GitHub Action build result: *${{ job.status }}* :${{ job.status }}:"
-                }
-              },
-              {
-                "type": "divider"
-              },
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-                }
-              }
-            ]
-          }
+      run: |
+        echo "Fetch workflow run jobs"
+
+        json_data=$(curl -s -H "Authorization: Bearer ${{ github.token }}" \
+                "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs")
+
+        name_conclusion_array=($(echo "$json_data" | jq -r '.jobs[] | select(.name | startswith("My matrix job")) | "\(.name).\(.conclusion)"'))
+
+        for item in "${name_conclusion_array[@]}"; do
+            IFS='.' read -r name conclusion <<< "$item"
+            echo "Name: $name"
+            echo "Conclusion: $conclusion"
+        done
+      # if: ${{ failure() && github.event_name != 'workflow_dispatch' }}
+      # id: slack
+      # uses: slackapi/slack-github-action@v2
+      # with:
+      #   webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+      #   webhook-type: webhook-trigger
+      #   # For posting a rich message using Block Kit
+      #   payload: |
+      #     {
+      #       "blocks": [
+      #         {
+      #           "type": "header",
+      #           "text": {
+      #             "type": "plain_text",
+      #             "text": "HATS Cloud tests: ${{ matrix.python-version }} - ${{ matrix.cloud }}"
+      #           }
+      #         },
+      #         {
+      #           "type": "section",
+      #           "text": {
+      #             "type": "mrkdwn",
+      #             "text": "GitHub Action build result: *${{ job.status }}* :${{ job.status }}:"
+      #           }
+      #         },
+      #         {
+      #           "type": "divider"
+      #         },
+      #         {
+      #           "type": "section",
+      #           "text": {
+      #             "type": "mrkdwn",
+      #             "text": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      #           }
+      #         }
+      #       ]
+          # }
