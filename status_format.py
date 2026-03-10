@@ -12,12 +12,23 @@ def do_thing(input_file, output_file, prefix, repo_name):
         if job["name"].startswith(prefix) and job["conclusion"].startswith("fail"):
             to_report[job["name"]] = job
 
-    table_rows = [{"type": "raw_text", "text": "job name"}, {"type": "raw_text", "text": "workflow URL"}]
+    table_rows = [[{"type": "raw_text", "text": "job name"}, {"type": "raw_text", "text": "workflow URL"}]]
     for key in sorted(to_report):
         print(key, to_report[key]["conclusion"], to_report[key]["run_id"])
         url = f"https://github.com/astronomy-commons/hats-cloudtests/actions/runs/{to_report[key]["run_id"]}/job/{to_report[key]["id"]}"
 
-        row = [{"type": "raw_text", "text": key}, {"type": "raw_text", "text": url}]
+        row = [{"type": "raw_text", "text": key}, {"type": "rich_text", "elements": [
+							{
+								"type": "rich_text_section",
+								"elements": [
+									{
+										"text": url,
+										"type": "link",
+										"url": url
+									}
+								]
+							}
+						]}]
         table_rows.append(row)
     payload = {
         "blocks": [
