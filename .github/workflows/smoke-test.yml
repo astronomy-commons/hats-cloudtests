@@ -43,7 +43,7 @@ jobs:
     - name: Run local s3 with pytest
       if: matrix.cloud == 'local_s3'
       run: |
-        python -m pytest tests --cloud local_s3
+        python -m pytest tests --cloud local
     - name: Run local http with pytest
       if: matrix.cloud == 'http'
       run: |
@@ -75,55 +75,19 @@ jobs:
     if: failure()
     runs-on: ubuntu-latest 
     steps:
-    - name: Send status to Slack app (LSDB CI Reporter)
+    - name: Format status for Slack
       run: |
         echo "Fetch workflow run jobs"
 
-        json_data=$(curl -s -H "Authorization: Bearer ${{ github.token }}" \
-                "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs")
-        echo "$json_data" | jq -r '.jobs[] | select(.name | startswith("build")) | select(.conclusion | startswith("fail")) | .name, .conclusion, .run_id, .id'  &> jq.out
+        curl -s -H "Authorization: Bearer ${{ github.token }}" \
+                "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs" &> runs_status.json
 
-        echo "Github Failures:"
-        echo "----------------"
+        python status_format.py runs_status.json payload.json --repo_name="TESTS OF HATS Cloud Tests"
 
-        while IFS= read -r line1 && IFS= read -r line2 && IFS= read -r line3 && IFS= read -r line4
-        do
-            echo "$line2: $line1"
-            echo "${{ github.server_url }}/${{ github.repository }}/actions/runs/$line3/job/$line4"
-        done < "jq.out"
-      # if: ${{ failure() && github.event_name != 'workflow_dispatch' }}
-      # id: slack
-      # uses: slackapi/slack-github-action@v2
-      # with:
-      #   webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
-      #   webhook-type: webhook-trigger
-      #   # For posting a rich message using Block Kit
-      #   payload: |
-      #     {
-      #       "blocks": [
-      #         {
-      #           "type": "header",
-      #           "text": {
-      #             "type": "plain_text",
-      #             "text": "HATS Cloud tests: ${{ matrix.python-version }} - ${{ matrix.cloud }}"
-      #           }
-      #         },
-      #         {
-      #           "type": "section",
-      #           "text": {
-      #             "type": "mrkdwn",
-      #             "text": "GitHub Action build result: *${{ job.status }}* :${{ job.status }}:"
-      #           }
-      #         },
-      #         {
-      #           "type": "divider"
-      #         },
-      #         {
-      #           "type": "section",
-      #           "text": {
-      #             "type": "mrkdwn",
-      #             "text": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-      #           }
-      #         }
-      #       ]
-          # }
+    - name: Send status to Slack app (LSDB CI Reporter)
+      id: slack
+      uses: slackapi/slack-github-action@v2
+      with:
+        webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+        webhook-type: webhook-trigger
+        payload-file-path: payload.json
