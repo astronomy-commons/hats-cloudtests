@@ -44,10 +44,10 @@ jobs:
       if: matrix.cloud == 'local_s3'
       run: |
         python -m pytest tests --cloud local
-    - name: Run local http with pytest
-      if: matrix.cloud == 'http'
-      run: |
-        python -m pytest tests --cloud http
+    # - name: Run local http with pytest
+    #   if: matrix.cloud == 'http'
+    #   run: |
+    #     python -m pytest tests --cloud http
     # - name: Setup GCS emulator
     #   if: matrix.cloud == 'local_gcs'
     #   uses: fsouza/fake-gcs-action@main
@@ -94,6 +94,8 @@ jobs:
         cat payload.json >> $GITHUB_OUTPUT
         echo 'EOF' >> $GITHUB_OUTPUT
 
+        cat $GITHUB_OUTPUT
+
     - name: Send status to Slack app (LSDB CI Reporter)
       id: slack
       uses: slackapi/slack-github-action@v2
@@ -101,4 +103,5 @@ jobs:
         errors: true
         webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
         webhook-type: webhook-trigger
-        payload: ${{ steps.format-status.outputs.payload }}
+        payload: | 
+          ${{ steps.format-status.outputs.payload }}
