@@ -75,6 +75,11 @@ jobs:
     if: failure()
     runs-on: ubuntu-latest 
     steps:
+    - uses: actions/checkout@v6
+    - name: Set up Python 3.14
+      uses: actions/setup-python@v6
+      with:
+        python-version: 3.14
     - name: Format status for Slack
       run: |
         echo "Fetch workflow run jobs"
@@ -82,7 +87,7 @@ jobs:
         curl -s -H "Authorization: Bearer ${{ github.token }}" \
                 "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs" &> runs_status.json
 
-        python ${{ github.action_path }}/status_format.py runs_status.json payload.json --repo_name="TESTS OF HATS Cloud Tests"
+        python status_format.py runs_status.json payload.json --repo_name="TESTS OF HATS Cloud Tests"
 
     - name: Send status to Slack app (LSDB CI Reporter)
       id: slack
