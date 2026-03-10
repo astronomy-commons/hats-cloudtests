@@ -82,7 +82,7 @@ jobs:
         curl -s -H "Authorization: Bearer ${{ github.token }}" \
                 "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs" &> runs_status.json
 
-        python status_format.py runs_status.json payload.json --repo_name="TESTS OF HATS Cloud Tests"
+        python ${{ github.action_path }}/status_format.py runs_status.json payload.json --repo_name="TESTS OF HATS Cloud Tests"
 
     - name: Send status to Slack app (LSDB CI Reporter)
       id: slack
