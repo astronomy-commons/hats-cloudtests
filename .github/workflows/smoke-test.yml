@@ -83,19 +83,10 @@ jobs:
     - name: Format status for Slack
       id: format-status
       run: |
-        echo "Fetch workflow run jobs"
-
         curl -s -H "Authorization: Bearer ${{ github.token }}" \
                 "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs" &> runs_status.json
 
         python status_format.py runs_status.json payload.json --repo_name="TESTS OF HATS Cloud Tests"
-
-        echo 'payload<<EOF' >> $GITHUB_OUTPUT
-        cat payload.json >> $GITHUB_OUTPUT
-        echo 'EOF' >> $GITHUB_OUTPUT
-
-        cat $GITHUB_OUTPUT
-
     - name: Send status to Slack app (LSDB CI Reporter)
       id: slack
       uses: slackapi/slack-github-action@v2
@@ -103,5 +94,5 @@ jobs:
         errors: true
         webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
         webhook-type: webhook-trigger
-        payload: | 
-          ${{ steps.format-status.outputs.payload }}
+        payload-file-path: payload.json
+        payload-templated: false
