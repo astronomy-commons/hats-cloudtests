@@ -93,6 +93,8 @@ jobs:
       id: slack
       uses: slackapi/slack-github-action@v2
       with:
+        errors: true
         webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
         webhook-type: webhook-trigger
-        payload-file-path: payload.json
+        payload-file-path: "payload.json"
+        payload-templated: false
