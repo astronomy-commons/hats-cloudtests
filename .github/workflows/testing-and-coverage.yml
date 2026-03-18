@@ -16,7 +16,10 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.11', '3.12', '3.13', '3.14']
-        cloud: ['local_s3', 'local_gcs', 'http', 'connectivity']
+        cloud: ['local_s3', 'local_gcs', 'http']
+        include:
+          - python-version: '3.14'
+            cloud: 'connectivity'
 
     steps:
     - uses: actions/checkout@v6
@@ -59,6 +62,6 @@ jobs:
     #     ABFS_LINCCDATA_ACCOUNT_NAME: ${{ secrets.LINCC_ABFS_ACCOUNT_NAME }}
     #     ABFS_LINCCDATA_ACCOUNT_KEY: ${{ secrets.LINCC_ABFS_ACCOUNT_KEY }}
     - name: Run connectivity tests
-      if: matrix.cloud == 'connectivity' && matrix.python-version == '3.14'
+      if: matrix.cloud == 'connectivity'
       run: |
         python -m pytest connectivity_tests
