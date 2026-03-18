@@ -59,6 +59,6 @@ jobs:
     #     ABFS_LINCCDATA_ACCOUNT_NAME: ${{ secrets.LINCC_ABFS_ACCOUNT_NAME }}
     #     ABFS_LINCCDATA_ACCOUNT_KEY: ${{ secrets.LINCC_ABFS_ACCOUNT_KEY }}
     - name: Run connectivity tests
-      if: matrix.cloud == 'connectivity'
+      if: matrix.cloud == 'connectivity' and matrix.python-version == '3.14'
       run: |
         python -m pytest connectivity_tests
