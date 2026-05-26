@@ -1,3 +1,5 @@
+import sys
+
 import hats_import.index.run_index as runner
 import pyarrow as pa
 import pytest
@@ -6,6 +8,7 @@ from hats.io.file_io import read_parquet_metadata
 from hats_import.index.arguments import IndexArguments
 
 
+@pytest.mark.skipif((3, 11) <= sys.version_info < (3, 12), reason="dask expr regression with python 3.11")
 @pytest.mark.write_to_cloud
 def test_run_index(
     small_sky_order1_dir_local,
@@ -53,6 +56,7 @@ def test_run_index(
     assert schema.equals(basic_index_parquet_schema, check_metadata=False)
 
 
+@pytest.mark.skipif((3, 11) <= sys.version_info < (3, 12), reason="dask expr regression with python 3.11")
 def test_run_index_read_from_cloud(small_sky_order1_catalog_dir_cloud, tmp_path, dask_client):
     """Test appropriate metadata is written"""
 
