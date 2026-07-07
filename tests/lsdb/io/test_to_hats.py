@@ -22,12 +22,12 @@ def test_save_catalog(local_data_dir, tmp_cloud_path):
     expected_catalog = lsdb.read_hats(base_catalog_path)
     assert expected_catalog.hc_structure.catalog_name == catalog.hc_structure.catalog_name
     assert expected_catalog.get_healpix_pixels() == catalog.get_healpix_pixels()
-    pd.testing.assert_frame_equal(expected_catalog.compute(), catalog._ddf.compute())
+    pd.testing.assert_frame_equal(expected_catalog.compute(), catalog.compute())
 
     # When saving a catalog with write_catalog, we update the hats_max_rows
     # to the maximum count of points per partition. In this case there
     # is only one with 111 rows, so that is the value we expect.
-    partition_sizes = catalog._ddf.map_partitions(len).compute()
+    partition_sizes = catalog.map_partitions(len).compute()["result"]
     assert max(partition_sizes) == 111
 
     assert_catalog_info_is_correct(

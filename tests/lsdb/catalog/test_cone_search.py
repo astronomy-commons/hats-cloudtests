@@ -26,6 +26,6 @@ def test_cone_search_filters_partitions(small_sky_order1_catalog_cloud):
     hc_conesearch = small_sky_order1_catalog_cloud.hc_structure.filter_by_cone(ra, dec, radius)
     consearch_catalog = small_sky_order1_catalog_cloud.cone_search(ra, dec, radius)
     assert len(hc_conesearch.get_healpix_pixels()) == len(consearch_catalog.get_healpix_pixels())
-    assert len(hc_conesearch.get_healpix_pixels()) == consearch_catalog._ddf.npartitions
+    assert len(hc_conesearch.get_healpix_pixels()) == consearch_catalog.npartitions
     for pixel in hc_conesearch.get_healpix_pixels():
-        assert pixel in consearch_catalog._ddf_pixel_map
+        assert pixel in consearch_catalog.get_healpix_pixels()
