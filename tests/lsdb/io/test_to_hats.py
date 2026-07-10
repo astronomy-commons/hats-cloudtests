@@ -27,7 +27,7 @@ def test_save_catalog(local_data_dir, tmp_cloud_path):
     # When saving a catalog with write_catalog, we update the hats_max_rows
     # to the maximum count of points per partition. In this case there
     # is only one with 111 rows, so that is the value we expect.
-    partition_sizes = catalog.map_partitions(len).compute()["result"]
+    partition_sizes = catalog.map_partitions(len).compute()
     assert max(partition_sizes) == 111
 
     assert_catalog_info_is_correct(
