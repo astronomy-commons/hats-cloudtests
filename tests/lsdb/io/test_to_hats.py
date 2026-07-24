@@ -37,6 +37,10 @@ def test_save_catalog(local_data_dir, tmp_cloud_path):
         skymap_order=8,
         skymap_alt_orders=[1, 2],
         obs_regime="Optical",
+        moc_sky_fraction=0.083333,
+        # write_catalog stamps hats_order as a non-explicit property, so it
+        # round-trips as a string.
+        hats_order="0",
     )
 
     main_catalog_path = base_catalog_path / "small_sky_from_dataframe"
