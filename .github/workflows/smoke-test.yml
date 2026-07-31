@@ -87,7 +87,7 @@ jobs:
                 "type": "section",
                 "text": {
                   "type": "mrkdwn",
-                  "text": ":${{ job.status }}: *${{ github.repository }}:* ${{ matrix.python-version }} - ${{ matrix.cloud }} <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|run #${{ github.run_number }}>"
+                  "text": ":${{ job.status }}: *${{ github.repository }}:* ${{ matrix.python-version }} - ${{ matrix.cloud }} (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|run #${{ github.run_number }}>)"
                 }
               }
             ]
