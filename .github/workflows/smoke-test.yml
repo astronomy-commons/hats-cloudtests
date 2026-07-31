@@ -77,7 +77,6 @@ jobs:
       id: slack
       uses: slackapi/slack-github-action@v3
       with:
-        # For posting a rich message using Block Kit
         webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
         webhook-type: webhook-trigger
         payload: |
