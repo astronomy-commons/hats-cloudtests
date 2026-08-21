@@ -16,6 +16,7 @@ def dask_client():
         else:
             raise
 
+
 @pytest.fixture
 def small_sky_parts_dir_cloud(cloud_path):
     return cloud_path / "raw" / "small_sky_parts"
