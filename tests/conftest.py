@@ -44,27 +44,29 @@ def http_server(cloud, local_cloud_data_dir):
 
     requests = pytest.importorskip("requests")
     # pylint: disable=consider-using-with
-    proc = subprocess.Popen(
-        shlex.split(f"python -m http.server -d {local_cloud_data_dir}"),
-        stderr=subprocess.DEVNULL,
-        stdout=subprocess.DEVNULL,
-    )
-    endpoint_uri = "http://0.0.0.0:8000/"
-    try:
-        timeout = 5
-        while timeout > 0:
-            try:
-                r = requests.get(endpoint_uri, timeout=10)
-                if r.ok:
-                    break
-            except Exception:  # pylint: disable=broad-except
-                pass
-            timeout -= 0.1
-            time.sleep(0.1)
-        yield endpoint_uri
-    finally:
-        proc.terminate()
-        proc.wait()
+    with open("http.log", "w") as log_file:
+        proc = subprocess.Popen(
+            shlex.split(f"python -m http.server -d {local_cloud_data_dir}"),
+            stderr=subprocess.STDOUT,
+            stdout=log_file,
+            text=True,
+        )
+        endpoint_uri = "http://0.0.0.0:8000/"
+        try:
+            timeout = 5
+            while timeout > 0:
+                try:
+                    r = requests.get(endpoint_uri, timeout=10)
+                    if r.ok:
+                        break
+                except Exception:  # pylint: disable=broad-except
+                    pass
+                timeout -= 0.1
+                time.sleep(0.1)
+            yield endpoint_uri
+        finally:
+            proc.terminate()
+            proc.wait()
 
 
 @pytest.fixture(scope="session", name="s3_server")
