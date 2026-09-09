@@ -75,6 +75,21 @@ export ABFS_LINCCDATA_ACCOUNT_KEY=lincc_account_key
 
 This is currently disabled because the external bucket doesn't exist anymore.
 
+## Adding a new cloud
+
+Ideally, you can add a new cloud test with a few config changes.
+
+1. Pick a nice short name
+1. In `conftest.py`
+    1. add to `ALL_CLOUDS` list.
+    1. determine if your cloud is going to be tested for read-only, or also for cloud writing. Add (or don't) to the `READ_ONLY_CLOUDS` list
+    1. create a session-scoped `pytest.fixture` that creates a running instance of your cloud. should return a kwarg dict for connection.
+    1. add case in `cloud_path` and `storage_options` methods to return appropriate UPath or kwarg dict.
+1. Add cloud-specific test data (there are some tests that use absolute paths, and these will be different for each protocol)
+    1. `tests/data/indexed_files_<short_name>` - new directory, mirroring existing
+    2. `tests/cloud/data/collection_absolute_paths/coll_<short_name>` - new directory, with a single `collection.properties` file containing absolute paths to catalog tables.
+
+
 ## Contributing
 
 [![GitHub issue custom search in repo](https://img.shields.io/github/issues-search/astronomy-commons/hats-cloudtests?color=purple&label=Good%20first%20issues&query=is%3Aopen%20label%3A%22good%20first%20issue%22)](https://github.com/astronomy-commons/hats-cloudtests/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
