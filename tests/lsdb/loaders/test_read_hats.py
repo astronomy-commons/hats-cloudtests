@@ -110,6 +110,8 @@ def test_read_hats_collection_empty_filters(small_sky_order1_dir_cloud):
 
 
 def test_read_hats_collection_with_absolute_paths(cloud, test_data_dir_cloud, storage_options):
-    catalog = lsdb.open_catalog(test_data_dir_cloud / "collection_absolute_paths" / f"coll_{cloud}", storage_options=storage_options)
+    catalog = lsdb.open_catalog(
+        test_data_dir_cloud / "collection_absolute_paths" / f"coll_{cloud}", storage_options=storage_options
+    )
 
     assert isinstance(catalog.margin, lsdb.MarginCatalog)
