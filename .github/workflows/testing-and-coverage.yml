@@ -24,7 +24,7 @@ jobs:
     steps:
     - uses: actions/checkout@v7
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v7
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install uv
@@ -64,4 +64,6 @@ jobs:
     - name: Run connectivity tests
       if: matrix.cloud == 'connectivity'
       run: |
-        python -m pytest connectivity_tests
+        echo "Public IPv4: $(curl -4 -s --max-time 10 https://api.ipify.org || echo unavailable)"
+        echo "Public IPv6: $(curl -6 -s --max-time 10 https://api6.ipify.org || echo unavailable)"
+        python -m pytest connectivity_tests -s
