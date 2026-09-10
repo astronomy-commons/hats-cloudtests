@@ -71,7 +71,9 @@ jobs:
     - name: Run connectivity tests
       if: matrix.cloud == 'connectivity'
       run: |
-        python -m pytest connectivity_tests
+        echo "Public IPv4: $(curl -4 -s --max-time 10 https://api.ipify.org || echo unavailable)"
+        echo "Public IPv6: $(curl -6 -s --max-time 10 https://api6.ipify.org || echo unavailable)"
+        python -m pytest connectivity_tests -s
     - name: Send status to Slack app (LSDB CI Reporter)
       if: ${{ failure() && github.event_name != 'workflow_dispatch' }}
       id: slack
