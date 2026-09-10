@@ -154,7 +154,7 @@ def cloud_path(cloud, anon_s3_server, s3_server, local_cloud_data_dir, http_serv
     if cloud in ("anon_s3", "local_s3"):
         if cloud == "local_s3":
             s3so = s3_server
-        if cloud == "anon_s3":
+        else:
             s3so = anon_s3_server
         s3 = fsspec.filesystem("s3", **s3so)
         bucket_name = "test_bucket"
