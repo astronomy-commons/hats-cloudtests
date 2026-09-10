@@ -36,7 +36,7 @@ def test_from_vizcat():
     gaia = lsdb.open_catalog(
         VIZCAT_GAIA_URL,
         columns=["DR3Name", "RA_ICRS", "DE_ICRS"],
-        storage_options={"get_client": _get_traced_client},
+        storage_options={"get_client": _get_traced_client, "client_kwargs": {"timeout": 300}},
     )
 
     head_frame = gaia.head(10)
