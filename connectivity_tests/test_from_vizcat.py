@@ -32,10 +32,12 @@ async def _get_traced_client(**kwargs):
 
 
 def test_from_vizcat():
-    # Preserve storage_options for vizcat service.
-    storage_options = get_upath_for_protocol(VIZCAT_GAIA_URL).storage_options
     # Use a traced client to see the HTTP status code if the request fails.
-    path = UPath(VIZCAT_GAIA_URL, **storage_options, get_client=_get_traced_client)
-    gaia = lsdb.open_catalog(path, columns=["DR3Name", "RA_ICRS", "DE_ICRS"])
+    gaia = lsdb.open_catalog(
+        VIZCAT_GAIA_URL,
+        columns=["DR3Name", "RA_ICRS", "DE_ICRS"],
+        storage_options={"get_client": _get_traced_client},
+    )
+
     head_frame = gaia.head(10)
     assert len(head_frame) == 10
