@@ -1,7 +1,5 @@
 import aiohttp
 import lsdb
-from hats.io.file_io.file_pointer import get_upath_for_protocol
-from upath import UPath
 
 VIZCAT_GAIA_URL = "https://vizcat.cds.unistra.fr/hats:n=10000/gaia_dr3/"
 
@@ -32,10 +30,13 @@ async def _get_traced_client(**kwargs):
 
 
 def test_from_vizcat():
-    # Preserve storage_options for vizcat service.
-    storage_options = get_upath_for_protocol(VIZCAT_GAIA_URL).storage_options
     # Use a traced client to see the HTTP status code if the request fails.
-    path = UPath(VIZCAT_GAIA_URL, **storage_options, get_client=_get_traced_client)
-    gaia = lsdb.open_catalog(path, columns=["DR3Name", "RA_ICRS", "DE_ICRS"])
+    timeout_config = aiohttp.ClientTimeout(total=300)
+    gaia = lsdb.open_catalog(
+        VIZCAT_GAIA_URL,
+        columns=["DR3Name", "RA_ICRS", "DE_ICRS"],
+        storage_options={"get_client": _get_traced_client, "client_kwargs": {"timeout": timeout_config}},
+    )
+
     head_frame = gaia.head(10)
     assert len(head_frame) == 10

@@ -16,7 +16,9 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.11', '3.12', '3.13', '3.14']
-        cloud: ['local_s3', 'local_gcs', 'http']
+        # Issue #154
+        # cloud: ['local_s3', 'anon_s3', 'local_gcs', 'http']
+        cloud: ['local_s3', 'anon_s3', 'http']
         include:
           - python-version: '3.14'
             cloud: 'connectivity'

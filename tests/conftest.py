@@ -23,7 +23,7 @@ SMALL_SKY_ORDER1_DIR_NAME = "small_sky_order1"
 
 TEST_DIR = os.path.dirname(__file__)
 
-ALL_CLOUDS = ["abfs", "local_s3", "local_gcs", "http"]
+ALL_CLOUDS = ["abfs", "anon_s3", "local_s3", "local_gcs", "http"]
 READ_ONLY_CLOUDS = ["local_gcs", "http"]
 
 
@@ -113,8 +113,34 @@ def s3_server(cloud):
         proc.wait()
 
 
+@pytest.fixture(scope="session", name="anon_s3_server")
+def anon_s3_server(cloud):
+    if cloud != "anon_s3":
+        yield {}
+        return
+    # writable local S3 system
+    os.environ["BOTO_CONFIG"] = "/dev/null"
+    os.environ["AWS_ACCESS_KEY_ID"] = "testing"
+    os.environ["AWS_SECRET_ACCESS_KEY"] = "testing"
+    os.environ["AWS_SECURITY_TOKEN"] = "testing"
+    os.environ["AWS_SESSION_TOKEN"] = "testing"
+    os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
+
+    moto_server = pytest.importorskip("moto.server")
+
+    server = moto_server.ThreadedMotoServer(port=0)
+    server.start()
+    host, port = server.get_host_and_port()
+
+    s3so = {"client_kwargs": {"endpoint_url": f"http://{host}:{port}"}}
+
+    os.environ["FSSPEC_S3_ENDPOINT_URL"] = f"http://{host}:{port}"
+    yield s3so
+    server.stop()
+
+
 @pytest.fixture(scope="session", name="cloud_path")
-def cloud_path(cloud, s3_server, local_cloud_data_dir, http_server):
+def cloud_path(cloud, anon_s3_server, s3_server, local_cloud_data_dir, http_server):
     if cloud == "abfs":
         storage_options = {
             "account_name": os.environ.get("ABFS_LINCCDATA_ACCOUNT_NAME"),
@@ -125,8 +151,11 @@ def cloud_path(cloud, s3_server, local_cloud_data_dir, http_server):
         assert root_dir.exists()
         return root_dir
 
-    if cloud == "local_s3":
-        s3so = s3_server
+    if cloud in ("anon_s3", "local_s3"):
+        if cloud == "local_s3":
+            s3so = s3_server
+        else:
+            s3so = anon_s3_server
         s3 = fsspec.filesystem("s3", **s3so)
         bucket_name = "test_bucket"
         s3.mkdir(bucket_name)
@@ -161,7 +190,7 @@ def cloud_path(cloud, s3_server, local_cloud_data_dir, http_server):
 
 
 @pytest.fixture(scope="session", name="storage_options")
-def storage_options(cloud, s3_server):
+def storage_options(cloud, anon_s3_server, s3_server):
     if cloud == "abfs":
         storage_options = {
             "account_name": os.environ.get("ABFS_LINCCDATA_ACCOUNT_NAME"),
@@ -171,6 +200,9 @@ def storage_options(cloud, s3_server):
     if cloud == "local_s3":
         s3so = s3_server
         s3so["protocol"] = "s3"
+        return s3so
+    if cloud == "anon_s3":
+        s3so = anon_s3_server
         return s3so
     if cloud == "local_gcs":
         storage_options = {"protocol": "gcs", "endpoint_url": "http://0.0.0.0:4443", "token": "anon"}
@@ -206,7 +238,7 @@ def tmp_dir_cloud(cloud_path, cloud):
         return
 
     real_directories = True
-    if cloud in ("local_s3"):
+    if cloud in ("local_s3", "anon_s3"):
         real_directories = False
     tmp = TempCloudDirectory(
         cloud_path / "tmp",
