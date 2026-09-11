@@ -41,6 +41,17 @@ def test_read_hats_npix_as_dir(small_sky_npix_as_dir_cloud):
     assert len(catalog.compute().columns) == 5
 
 
+def test_read_hats_npix_as_dir_with_columns(small_sky_npix_as_dir_cloud):
+    catalog = lsdb.read_hats(small_sky_npix_as_dir_cloud, columns=["ra", "dec"])
+    # Show that npix_suffix indicates that Npix are directories and also matches the hats property.
+    catalog_npix_suffix = catalog.hc_structure.catalog_info.npix_suffix
+    assert catalog_npix_suffix == "/"
+    # Show that the catalog can be read as expected.
+    assert isinstance(catalog, lsdb.Catalog)
+    assert catalog.hc_structure.catalog_info.total_rows == len(catalog)
+    assert len(catalog.compute().columns) == 5
+
+
 def test_read_hats_collection_nested_filters(small_sky_order1_dir_cloud):
     """Tests that we appropriately handled nested pyarrow compute expressions,
     where all clauses are AND'd together"""
