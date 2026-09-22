@@ -18,7 +18,6 @@ repos:
         description: Clear output from Jupyter notebooks.
         files: \.ipynb$
         exclude: ^docs/pre_executed
-        stages: [pre-commit]
         language: system
         entry: jupyter nbconvert --clear-output
     # Prevents committing directly branches named 'main' and 'master'.
