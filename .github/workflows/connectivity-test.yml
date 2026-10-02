@@ -1,0 +1,59 @@
+# This workflow will run daily at 05:45.
+# It will install Python dependencies and connect to a set of external data sets.
+
+name: Nightly connectivity cloudtests
+
+on:
+
+  # Runs this workflow automatically
+  schedule:
+    - cron: 45 5 * * *
+    
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7
+    - name: Set up Python '3.14'
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.14'
+    - name: Install uv
+      uses: astral-sh/setup-uv@v7
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        uv pip install --system -e .[dev]
+        if [ -f requirements.txt ]; then uv pip install --system -r requirements.txt; fi
+    - name: List dependencies
+      run: |
+        pip list
+    - name: Run connectivity tests
+      run: |
+        echo "Public IPv4: $(curl -4 -s --max-time 10 https://api.ipify.org || echo unavailable)"
+        echo "Public IPv6: $(curl -6 -s --max-time 10 https://api6.ipify.org || echo unavailable)"
+        python -m pytest connectivity_tests -s
+    - name: Send status to Slack app (LSDB CI Reporter)
+      if: ${{ failure() && github.event_name != 'workflow_dispatch' }}
+      id: slack
+      uses: slackapi/slack-github-action@v4
+      with:
+        webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+        webhook-type: webhook-trigger
+        # For posting a rich message using Block Kit
+        payload: |
+          {
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": ":${{ job.status }}: *${{ github.repository }}:* nightly connectivity (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|run #${{ github.run_number }}>)"
+                }
+              }
+            ]
+          }
