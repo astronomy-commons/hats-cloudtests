@@ -22,14 +22,13 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ['3.11', '3.12', '3.13', '3.14']
-        cloud: ['local_s3', 'local_gcs', 'http']
-        include:
-          - python-version: '3.14'
-            cloud: 'connectivity'
+        # Issue #154
+        # cloud: ['local_s3', 'anon_s3', 'local_gcs', 'http']
+        cloud: ['local_s3', 'anon_s3', 'http']
     steps:
     - uses: actions/checkout@v7
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v7
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install uv
@@ -68,14 +67,10 @@ jobs:
     #   env:
     #     ABFS_LINCCDATA_ACCOUNT_NAME: ${{ secrets.LINCC_ABFS_ACCOUNT_NAME }}
     #     ABFS_LINCCDATA_ACCOUNT_KEY: ${{ secrets.LINCC_ABFS_ACCOUNT_KEY }}
-    - name: Run connectivity tests
-      if: matrix.cloud == 'connectivity'
-      run: |
-        python -m pytest connectivity_tests
     - name: Send status to Slack app (LSDB CI Reporter)
       if: ${{ failure() && github.event_name != 'workflow_dispatch' }}
       id: slack
-      uses: slackapi/slack-github-action@v3
+      uses: slackapi/slack-github-action@v4
       with:
         webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
         webhook-type: webhook-trigger

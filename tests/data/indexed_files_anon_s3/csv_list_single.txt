@@ -1,0 +1,5 @@
+test_bucket/raw/small_sky_parts/catalog_00_of_05.csv
+s3://test_bucket/raw/small_sky_parts/catalog_01_of_05.csv
+s3://test_bucket/raw/small_sky_parts/catalog_02_of_05.csv
+s3://test_bucket/raw/small_sky_parts/catalog_03_of_05.csv
+s3://test_bucket/raw/small_sky_parts/catalog_04_of_05.csv
