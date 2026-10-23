@@ -1,4 +1,5 @@
 import hats.io.file_io as file_io
+import lsdb
 import numpy as np
 
 
@@ -23,3 +24,9 @@ def test_from_epyc():
 
     # just make sure the result was successfully computed
     assert len(result) == 1086
+
+
+def test_npix_as_dir():
+    """See https://github.com/astronomy-commons/lsdb/issues/1612"""
+    small_sky = lsdb.open_catalog("https://data.lsdb.io/unstable/small_sky_npix_as_dir")
+    small_sky.head()
