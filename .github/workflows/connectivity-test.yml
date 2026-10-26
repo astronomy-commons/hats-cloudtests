@@ -1,4 +1,4 @@
-# This workflow will run daily at 05:45.
+# This workflow will run daily on weekdays at 05:45.
 # It will install Python dependencies and connect to a set of external data sets.
 
 name: Nightly connectivity cloudtests
@@ -7,7 +7,7 @@ on:
 
   # Runs this workflow automatically
   schedule:
-    - cron: 45 5 * * *
+    - cron: 45 5 * * 1-5
     
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
