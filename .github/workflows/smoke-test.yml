@@ -9,15 +9,19 @@ on:
 
   # Runs this workflow automatically
   schedule:
-    - cron: 45 6 * * *
-    
+    - cron: 45 6 * * 1-5
+
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+
+permissions: {}
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -26,13 +30,15 @@ jobs:
         # cloud: ['local_s3', 'anon_s3', 'local_gcs', 'http']
         cloud: ['local_s3', 'anon_s3', 'http']
     steps:
-    - uses: actions/checkout@v7
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      with:
+        persist-credentials: false
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v7
+      uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install uv
-      uses: astral-sh/setup-uv@v7
+      uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884  # v10.3.0
     - name: Install dependencies
       run: |
         sudo apt-get update
@@ -44,11 +50,11 @@ jobs:
     - name: Run local s3 with pytest
       if: matrix.cloud == 'local_s3'
       run: |
-        python -m pytest tests --cloud local_s3
+        python -m pytest -o log_cli=true -vv tests --cloud local_s3
     - name: Run local http with pytest
       if: matrix.cloud == 'http'
       run: |
-        python -m pytest tests --cloud http
+        python -m pytest -o log_cli=true -vv tests --cloud http
     - name: Setup GCS emulator
       if: matrix.cloud == 'local_gcs'
       uses: fsouza/fake-gcs-action@main
@@ -61,20 +67,27 @@ jobs:
     - name: Run local GCS (google cloud) with pytest
       if: matrix.cloud == 'local_gcs'
       run: |
-        python -m pytest tests --cloud local_gcs    # - name: Run ABFS unit tests with pytest
+        python -m pytest -o log_cli=true -vv tests --cloud local_gcs    # - name: Run ABFS unit tests with pytest
     #   run: |
     #     python -m pytest tests --cloud abfs
     #   env:
     #     ABFS_LINCCDATA_ACCOUNT_NAME: ${{ secrets.LINCC_ABFS_ACCOUNT_NAME }}
     #     ABFS_LINCCDATA_ACCOUNT_KEY: ${{ secrets.LINCC_ABFS_ACCOUNT_KEY }}
-    - name: Send status to Slack app (LSDB CI Reporter)
-      if: ${{ failure() && github.event_name != 'workflow_dispatch' }}
+
+  notify:
+
+    needs: build
+    # Only notify if the workflow failed and was not manually started. Customize this as necessary.
+    if: ${{ failure() && github.event_name != 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Send status to Slack app
       id: slack
-      uses: slackapi/slack-github-action@v4
+      uses: slackapi/slack-github-action@dcb1066f776dd043e64d0e8ba94ca15cc7e1875d  # v4.0.0
       with:
         webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
-        webhook-type: webhook-trigger
-        # For posting a rich message using Block Kit
+        webhook-type: incoming-webhook
         payload: |
           {
             "blocks": [
@@ -82,7 +95,7 @@ jobs:
                 "type": "section",
                 "text": {
                   "type": "mrkdwn",
-                  "text": ":${{ job.status }}: *${{ github.repository }}:* ${{ matrix.python-version }} - ${{ matrix.cloud }} (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|run #${{ github.run_number }}>)"
+                  "text": ":${{ needs.build.result }}: *${{ github.repository }}* (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|run #${{ github.run_number }}>)"
                 }
               }
             ]
