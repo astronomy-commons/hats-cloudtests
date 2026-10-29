@@ -37,13 +37,20 @@ jobs:
         echo "Public IPv4: $(curl -4 -s --max-time 10 https://api.ipify.org || echo unavailable)"
         echo "Public IPv6: $(curl -6 -s --max-time 10 https://api6.ipify.org || echo unavailable)"
         python -m pytest connectivity_tests -s
+
+  notify:
+
+    needs: build
+    if: ${{ failure() && github.event_name != 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+
+    steps:
     - name: Send status to Slack app (LSDB CI Reporter)
-      if: ${{ failure() && github.event_name != 'workflow_dispatch' }}
       id: slack
       uses: slackapi/slack-github-action@v4
       with:
         webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
-        webhook-type: webhook-trigger
+        webhook-type: incoming-webhook
         # For posting a rich message using Block Kit
         payload: |
           {
@@ -52,7 +59,7 @@ jobs:
                 "type": "section",
                 "text": {
                   "type": "mrkdwn",
-                  "text": ":${{ job.status }}: *${{ github.repository }}:* nightly connectivity (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|run #${{ github.run_number }}>)"
+                  "text": ":${{ needs.build.result }}: *${{ github.repository }}:* nightly connectivity (<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|run #${{ github.run_number }}>)"
                 }
               }
             ]
