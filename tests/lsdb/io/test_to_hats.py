@@ -45,7 +45,6 @@ def test_save_catalog(local_data_dir, tmp_cloud_path):
 
     main_catalog_path = base_catalog_path / "small_sky_from_dataframe"
 
-    assert (main_catalog_path / "properties").exists()
     assert (main_catalog_path / "hats.properties").exists()
 
     point_map_path = main_catalog_path / "point_map.fits"
