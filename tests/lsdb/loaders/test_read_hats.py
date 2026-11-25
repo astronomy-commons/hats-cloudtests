@@ -37,8 +37,9 @@ def test_read_hats_npix_as_dir(small_sky_npix_as_dir_cloud):
     assert catalog_npix_suffix == "/"
     # Show that the catalog can be read as expected.
     assert isinstance(catalog, lsdb.Catalog)
-    assert catalog.hc_structure.catalog_info.total_rows == len(catalog)
-    assert len(catalog.compute().columns) == 5
+    result = catalog.compute()
+    assert len(result) == catalog.hc_structure.catalog_info.total_rows
+    assert len(result.columns) == 5
 
 
 def test_read_hats_npix_as_dir_with_columns(small_sky_npix_as_dir_cloud):
@@ -48,8 +49,9 @@ def test_read_hats_npix_as_dir_with_columns(small_sky_npix_as_dir_cloud):
     assert catalog_npix_suffix == "/"
     # Show that the catalog can be read as expected.
     assert isinstance(catalog, lsdb.Catalog)
-    assert catalog.hc_structure.catalog_info.total_rows == len(catalog)
-    assert len(catalog.compute().columns) == 2
+    result = catalog.compute()
+    assert len(result) == catalog.hc_structure.catalog_info.total_rows
+    assert len(result.columns) == 2
 
 
 def test_read_hats_collection_nested_filters(small_sky_order1_dir_cloud):

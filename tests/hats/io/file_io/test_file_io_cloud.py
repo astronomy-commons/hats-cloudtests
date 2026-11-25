@@ -58,6 +58,27 @@ def test_read_parquet_to_pandas_dir(small_sky_dir_local, small_sky_order1_catalo
     pd.testing.assert_frame_equal(parquet_df, loaded_df)
 
 
+def test_read_parquet_to_pandas_dir_over_http(small_sky_order1_catalog_dir_cloud, http_requests):
+    """A directory is read from its listing page alone, and the URL query goes to each file.
+    The page's link to sort its columns is not read as a file."""
+    dir_pointer = small_sky_order1_catalog_dir_cloud / "dataset" / "Norder=1" / "Dir=0"
+
+    loaded_df = read_parquet_file_to_pandas(UPath(f"{dir_pointer}?columns=ra,dec"), is_dir=True)
+
+    assert len(loaded_df) == 131
+    path = "/data/small_sky_order1/small_sky_order1/dataset/Norder=1/Dir=0"
+    files = {f"{path}/Npix={pixel}.parquet?columns=ra,dec" for pixel in range(44, 48)}
+    assert set(http_requests) == {path, f"{path}/", *files}
+
+
+def test_read_parquet_to_pandas_dir_without_files(small_sky_npix_as_dir_cloud):
+    """A directory without files fails, instead of reading as an empty frame."""
+    dir_with_only_subdirs = small_sky_npix_as_dir_cloud / "dataset" / "Norder=0" / "Dir=0"
+
+    with pytest.raises(FileNotFoundError, match="No files found"):
+        read_parquet_file_to_pandas(dir_with_only_subdirs, is_dir=True)
+
+
 @pytest.mark.write_to_cloud
 def test_write_df_to_csv(tmp_cloud_path):
     random_df = pd.DataFrame(np.random.randint(0, 100, size=(100, 4)), columns=list("ABCD"))

@@ -1,7 +1,11 @@
 import os
 import shlex
 import subprocess
+import threading
 import time
+from functools import partial
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+from io import BytesIO
 from pathlib import Path
 
 import fsspec
@@ -36,35 +40,45 @@ def cloud(request):
     return request.config.getoption("--cloud")
 
 
+class ApacheListingHandler(SimpleHTTPRequestHandler):
+    """Lists directories like Apache: besides its entries, the page links back to itself
+    to sort its columns (``?C=N;O=D``)."""
+
+    def list_directory(self, path):
+        names = [entry.name + "/" if entry.is_dir() else entry.name for entry in os.scandir(path)]
+        page = "".join(f'<a href="{name}">{name}</a>' for name in ["?C=N;O=D", *names]).encode()
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html")
+        self.send_header("Content-Length", str(len(page)))
+        self.end_headers()
+        return BytesIO(page)
+
+    def log_message(self, *args):
+        pass
+
+
 @pytest.fixture(scope="session", name="http_server")
 def http_server(cloud, local_cloud_data_dir):
     if cloud != "http":
         yield None
         return
+    handler = partial(ApacheListingHandler, directory=local_cloud_data_dir)
+    with ThreadingHTTPServer(("0.0.0.0", 8000), handler) as server:
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        yield "http://0.0.0.0:8000/"
+        server.shutdown()
 
-    requests = pytest.importorskip("requests")
-    # pylint: disable=consider-using-with
-    proc = subprocess.Popen(
-        shlex.split(f"python -m http.server -d {local_cloud_data_dir}"),
-        stderr=subprocess.DEVNULL,
-        stdout=subprocess.DEVNULL,
+
+@pytest.fixture(name="http_requests")
+def http_requests(http_server, monkeypatch):
+    """Paths of the requests that the http server gets during a test."""
+    if http_server is None:
+        pytest.skip("Runs only for the http cloud")
+    requests = []
+    monkeypatch.setattr(
+        ApacheListingHandler, "log_message", lambda handler, *args: requests.append(handler.path)
     )
-    endpoint_uri = "http://0.0.0.0:8000/"
-    try:
-        timeout = 5
-        while timeout > 0:
-            try:
-                r = requests.get(endpoint_uri, timeout=10)
-                if r.ok:
-                    break
-            except Exception:  # pylint: disable=broad-except
-                pass
-            timeout -= 0.1
-            time.sleep(0.1)
-        yield endpoint_uri
-    finally:
-        proc.terminate()
-        proc.wait()
+    return requests
 
 
 @pytest.fixture(scope="session", name="s3_server")
